@@ -10,17 +10,22 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<BancoContext>(x
         => x.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"), new MySqlServerVersion(new Version(3, 0, 38))));
 
+builder.Services.AddScoped<AbareService>();
+builder.Services.AddScoped<CupiraService>();
+builder.Services.AddScoped<CansancaoService>();
+builder.Services.AddScoped<XiqueXiqueService>();
+builder.Services.AddScoped<AlcinopolisService>();
+builder.Services.AddScoped<CafarnaumService>();
+builder.Services.AddScoped<IndiaporaService>();
+builder.Services.AddScoped<AnadiaService>();
+builder.Services.AddScoped<GiraDoPoncianoService>();
 
 builder.Services.AddScoped<MatriculaService>();
-builder.Services.AddScoped<ServidorService>();
-builder.Services.AddScoped<Preenchimento>();
-
-
-builder.Services.AddScoped<AbareService>();
-
-
 builder.Services.AddScoped<SecretariaService>();
+builder.Services.AddScoped<ServidorService>();
 builder.Services.AddScoped<CategoriaService>();
+builder.Services.AddScoped<GeradorDePerfil>();
+builder.Services.AddScoped<PerfilCalculo>();
 
 builder.Services.AddScoped<CleanupService>();
 

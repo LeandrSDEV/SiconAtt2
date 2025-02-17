@@ -13,18 +13,11 @@
 <br />
 
 <form asp-controller="Convenio" asp-action="ProcessarArquivo" method="post" enctype="multipart/form-data">
-    <div class="form-group">
-        <label for="status-select">Status</label>
-        <!-- Campo de entrada com suporte ao autocomplete -->
-        <input list="status-options" id="status-select" name="StatusSelecionado" class="form-control" />
-
-        <!-- DataList com as opções do Enum -->
-        <datalist id="status-options">
-            @foreach (var status in ViewBag.Statuses as List<SelectListItem>)
-            {
-                <option value="@status.Value">@status.Text"></option>
-            }
-        </datalist>
+    <div class="w-50 my-3 m-auto">
+        <label for="StatusSelecionado" class="form-label">Município:</label>
+        <select asp-for="StatusSelecionado" class="form-select" asp-items="ViewBag.Statuses">
+            <option value=""> < --- Selecione o município  --- ></></option>
+        </select>
     </div>
 
     <br /><br />

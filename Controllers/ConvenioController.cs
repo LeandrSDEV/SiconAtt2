@@ -1,7 +1,6 @@
 ﻿using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using NPOI.HSSF.UserModel;
 using Servidor.Data;
 using Servidor.ErrosService;
@@ -17,24 +16,47 @@ namespace Servidor.Controllers
         private readonly SecretariaService _secretariaservice;
         private readonly ServidorService _servidorService;
         private readonly CategoriaService _categoriaService;
-        private readonly CleanupService _cleanupService;
-        private readonly Preenchimento _preenchimento;
+        private readonly GeradorDePerfil _geradorDePerfil;
+        private readonly PerfilCalculo _perfilCalculo;
+        private readonly CleanupService _cleanupService;        
 
         private readonly AbareService _abareservice;
+        private readonly CupiraService _cupiraservice;
+        private readonly CansancaoService _cansancaoservice;
+        private readonly XiqueXiqueService _xiquexiqueservice;
+        private readonly AlcinopolisService _alcinopolisService;
+        private readonly CafarnaumService _cafarnaumService;
+        private readonly IndiaporaService _IndiaporaService;
+        private readonly AnadiaService _anadiaService;
+        private readonly GiraDoPoncianoService _giraDoPoncianoService;
 
-        public ConvenioController(BancoContext context, MatriculaService matriculaservice,
-                                    SecretariaService secretariaservice, ServidorService servidorService,
-                                    CategoriaService categoriaService, CleanupService cleanupService,
-                                    Preenchimento preenchimento, AbareService abareservice)
+        public ConvenioController(BancoContext context, AbareService abareservice, 
+                                  CupiraService cupiraservice, CansancaoService cansancaoservice, 
+                                  MatriculaService matriculaservice, SecretariaService secretariaservice,
+                                  ServidorService servidorService, CategoriaService categoriaService,
+                                  CleanupService cleanupService, XiqueXiqueService xiqueXiqueService,
+                                  AlcinopolisService alcinopolisService, CafarnaumService cafarnaumService,
+                                  IndiaporaService indiaporaService, GeradorDePerfil geradorDePerfil,
+                                  AnadiaService anadiaService, PerfilCalculo perfilCalculo,
+                                  GiraDoPoncianoService giraDoPoncianoService)
         {
             _context = context;
-            _matriculaservice = matriculaservice;
-            _secretariaservice = secretariaservice;
             _servidorService = servidorService;
+            _matriculaservice = matriculaservice;
             _categoriaService = categoriaService;
+            _secretariaservice = secretariaservice;
+            _geradorDePerfil = geradorDePerfil;
+            _perfilCalculo = perfilCalculo;
             _cleanupService = cleanupService;
-            _preenchimento = preenchimento;
+            _xiquexiqueservice = xiqueXiqueService;
+            _alcinopolisService = alcinopolisService;
+            _cafarnaumService = cafarnaumService;
+            _IndiaporaService = indiaporaService;
             _abareservice = abareservice;
+            _cansancaoservice = cansancaoservice;
+            _cupiraservice = cupiraservice;
+            _anadiaService = anadiaService;
+            _giraDoPoncianoService = giraDoPoncianoService;
         }
 
         public IActionResult Index()
@@ -54,205 +76,152 @@ namespace Servidor.Controllers
         [HttpPost]
         public async Task<IActionResult> ProcessarArquivo(IFormFile arquivoTxt, IFormFile arquivoExcel, EnumModel status)
         {
-            if ((arquivoTxt == null || arquivoTxt.Length == 0) && (arquivoExcel == null || arquivoExcel.Length == 0))
+            if (arquivoTxt == null || arquivoTxt.Length == 0 && arquivoExcel == null || arquivoExcel.Length == 0)
             {
-                TempData["Mensagem"] = "Erro nos arquivos enviados.";
+                TempData["Mensagem"] = "Erro nos arquivos enviado.";
                 return RedirectToAction("Index");
             }
 
-            var statusSelecionado = status.StatusSelecionado;
+            var registros = new List<ContrachequeModel>();
+            var registros2 = new List<AdministrativoModel>();
 
             try
             {
-                // Processar o arquivo TXT
-                var registrosTxt = arquivoTxt != null ? await ProcessarArquivoTxt(arquivoTxt, statusSelecionado) : new List<ContrachequeModel>();
-                if (registrosTxt.Any())
+                var serviceMap = new Dictionary<Status, Func<string[], Task<List<ContrachequeModel>>>>
+{
+                    { Status.PREF_Abare_BA, colunas => _abareservice.ProcessarArquivoAsync(colunas, Status.PREF_Abare_BA) },
+                    { Status.PREF_Cupira_PE, colunas => _cupiraservice.ProcessarArquivoAsync(colunas, Status.PREF_Cupira_PE) },
+                    { Status.PREF_Cansanção_BA, colunas => _cansancaoservice.ProcessarArquivoAsync(colunas, Status.PREF_Cansanção_BA) },
+                    { Status.PREF_XiqueXique_BA, colunas => _xiquexiqueservice.ProcessarArquivoAsync(colunas, Status.PREF_XiqueXique_BA) },
+                    { Status.PREF_Alcinópolis_BA, colunas => _alcinopolisService.ProcessarArquivoAsync(colunas, Status.PREF_Alcinópolis_BA) },
+                    { Status.PREF_Cafarnaum_BA, colunas => _cafarnaumService.ProcessarArquivoAsync(colunas, Status.PREF_Cafarnaum_BA) },
+                    { Status.PREF_Indiaporã_SP, colunas => _IndiaporaService.ProcessarArquivoAsync(colunas, Status.PREF_Indiaporã_SP) },
+                    { Status.PREF_Anadia_AL, colunas => _anadiaService.ProcessarArquivoAsync(colunas, Status.PREF_Anadia_AL) },
+                    { Status.PREF_GirauDoPonciano, colunas => _giraDoPoncianoService.ProcessarArquivoAsync(colunas, Status.PREF_GirauDoPonciano) },
+};
+
+                if (serviceMap.TryGetValue(status.StatusSelecionado, out var processarArquivo))
                 {
-                    await SalvarRegistrosTxt(registrosTxt);
+                    using var reader = new StreamReader(arquivoTxt.OpenReadStream(), Encoding.UTF8);
+                    while (!reader.EndOfStream)
+                    {
+                        var linha = await reader.ReadLineAsync();
+                        if (string.IsNullOrWhiteSpace(linha) || !linha.StartsWith("F", StringComparison.OrdinalIgnoreCase))
+                            continue;
+
+                        var colunas = linha.Split(';').Select(c => c.Trim()).ToArray();
+                        var contracheques = await processarArquivo(colunas);
+                        registros.AddRange(contracheques);
+                    }
                 }
 
-                // Processar o arquivo Excel
-                var registrosExcel = arquivoExcel != null ? ProcessarArquivoExcel(arquivoExcel) : new List<AdministrativoModel>();
-                if (registrosExcel.Any())
+                if (registros.Any())
                 {
-                    await SalvarRegistrosExcel(registrosExcel);
+                    _context.Contracheque.AddRange(registros);
+                    await _context.SaveChangesAsync();
+                    TempData["Mensagem"] = $"{registros.Count} registros salvos com sucesso!";
                 }
-
-                // Executar etapas subsequentes
-                await ExecutarEtapasDeProcessamento();
-
-                TempData["Mensagem"] = "Arquivos processados com sucesso!";
+                else
+                {
+                    TempData["Mensagem"] = "Nenhum dado válido encontrado no arquivo TXT.";
+                }
             }
             catch (Exception ex)
             {
-                TempData["Mensagem"] = $"Erro ao processar arquivos: {ex.Message}";
+                TempData["Mensagem"] = $"Erro ao processar o arquivo TXT: {ex.Message}";
             }
+//=====================================================================================================\\
+            try
+            {
+                using (var stream = arquivoExcel.OpenReadStream())
+                {
+                    var workbook = new HSSFWorkbook(stream); // Para arquivos .xls
+                    var sheet = workbook.GetSheetAt(0); // Pega a primeira aba
+
+                    for (int rowIdx = 1; rowIdx <= sheet.LastRowNum; rowIdx++) // Começa da linha 1 para ignorar cabeçalho
+                    {
+                        var row = sheet.GetRow(rowIdx);
+                        if (row == null) continue; // Ignora linhas vazias
+
+                        var administrativo = new AdministrativoModel
+                        {
+                            Acoluna1 = row.GetCell(2)?.ToString() ?? "",
+
+                            // Lê apenas os 10 últimos dígitos ou preenche com zeros se for menor
+                            Acoluna2 = row.GetCell(3)?.ToString().Length >= 10
+                            ? row.GetCell(3).ToString().Substring(row.GetCell(3).ToString().Length - 10)
+                            : row.GetCell(3)?.ToString().PadLeft(10, '0') ?? "0000000000",
+
+                            Acoluna3 = row.GetCell(4)?.ToString() ?? "", // Coluna 5
+                            Acoluna4 = row.GetCell(12)?.ToString() ?? "", // Coluna 13
+                            Acoluna5 = row.GetCell(13)?.ToString() ?? "", // Coluna 14
+                            Acoluna6 = row.GetCell(14)?.ToString() ?? "", // Coluna 15
+                            
+                        };
+
+                         //Mapeamento de valores para Acoluna5
+                        var Vinculo = new Dictionary<string, string>
+                        {
+                            { "Contratado", "5" },
+                            { "Comissionado", "7" },
+                            { "Agente politico", "13" },
+                            { "Efetivo", "2" },
+                            { "Inativo", "14" },
+                            { "Pensionista", "1" },
+                            { "Cedido", "33" },
+                            { "Eletivo", "13" },
+                            { "Temporário", "11"},
+                            { "Aguardando Especificar", "14" },
+                            { "Conselheiro Tutelar", "17"},
+                            { "Estatutário", "10"},
+                            { "Militar", "14"},
+                            { "Celetista", "9"},
+                            { "Efetivo/Cedido", "15"},
+                            { "Função Pública Relevante", "29"},
+                            { "Estagiario", "8"},
+                            { "Aposentado", "4"},
+                        };                      
+
+                         //Atualiza Acoluna5 com base no mapeamento
+                        if (Vinculo.ContainsKey(administrativo.Acoluna5))
+                        {
+                            administrativo.Acoluna5 = Vinculo[administrativo.Acoluna5];
+                        }
+                        registros2.Add(administrativo);
+                    }
+                }
+
+                if (registros2.Any())
+                {
+                    _context.Administrativo.AddRange(registros2);
+                    await _context.SaveChangesAsync();
+                    TempData["Mensagem"] = $"{registros2.Count} registros salvos com sucesso!";
+                }
+                else
+                {
+                    TempData["Mensagem"] = "Nenhum dado válido encontrado no arquivo Excel.";
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["Mensagem"] = $"Erro ao processar o arquivo Excel: {ex.Message}";
+            }
+
+            await _servidorService.GerarEncontradoAsync();
+
+            await _matriculaservice.GerarMatriculasAsync();
+
+            await _categoriaService.GerarVinculoAsync();
+
+            await _secretariaservice.GerarSecretariasAsync(status.StatusSelecionado);
+
+            await _geradorDePerfil.GerarPerfilAcessoAsync(status.StatusSelecionado);  //Perfil de Acesso (Limitado)
+
+            await _perfilCalculo.GeradorPerfilCalculo(status.StatusSelecionado);
+
+            await _cleanupService.LimparTabelasAsync();
 
             return RedirectToAction("Index");
         }
-
-        private async Task SalvarRegistrosTxt(List<ContrachequeModel> registrosTxt)
-        {
-            _context.Contracheque.AddRange(registrosTxt);
-            await _context.SaveChangesAsync();
-            TempData["Mensagem"] = $"{registrosTxt.Count} registros do TXT salvos com sucesso!";
-        }
-
-        private async Task SalvarRegistrosExcel(List<AdministrativoModel> registrosExcel)
-        {
-            _context.Administrativo.AddRange(registrosExcel);
-            await _context.SaveChangesAsync();
-            TempData["Mensagem"] = $"{registrosExcel.Count} registros do Excel salvos com sucesso!";
-        }
-
-        private async Task ExecutarEtapasDeProcessamento()
-        {
-            // Etapa 1: Gerar o arquivo de servidores com discrepâncias
-            await _servidorService.GerarEncontradoAsync();
-
-            // Etapa 2: Atualizar a tabela Administrativo com as discrepâncias do arquivo SERVIDOR
-            await InserirNovosServidores("SERVIDOR.txt");
-
-            // Etapa 3: Gerar o arquivo de Matrículas com discrepâncias
-            await _matriculaservice.GerarMatriculasAsync();
-
-            // Etapa 4: Atualizar a tabela Administrativo com as discrepâncias do arquivo MATRÍCULA
-            await AtualizarBancoComDiscrepancias("MATRÍCULA.txt");
-        }
-
-
-        private async Task<List<ContrachequeModel>> ProcessarArquivoTxt(IFormFile arquivoTxt, Status statusSelecionado)
-        {
-            var registros = new List<ContrachequeModel>();
-            var serviceMap = new Dictionary<Status, Func<string[], Task<List<ContrachequeModel>>>>
-    {
-        { Status.PREF_Abare_BA, colunas => _abareservice.ProcessarArquivoAsync(colunas, Status.PREF_Abare_BA) },
-    };
-
-            if (serviceMap.TryGetValue(statusSelecionado, out var processarArquivo))
-            {
-                using var reader = new StreamReader(arquivoTxt.OpenReadStream(), Encoding.UTF8);
-                while (!reader.EndOfStream)
-                {
-                    var linha = await reader.ReadLineAsync();
-                    if (string.IsNullOrWhiteSpace(linha) || !linha.StartsWith("F", StringComparison.OrdinalIgnoreCase))
-                        continue;
-
-                    var colunas = linha.Split(';').Select(c => c.Trim()).ToArray();
-                    var contracheques = await processarArquivo(colunas);
-                    registros.AddRange(contracheques);
-
-                    // Log para depuração
-                    Console.WriteLine($"Processando linha: {linha}");
-                }
-            }
-
-            // Log para saber quantos registros foram processados
-            Console.WriteLine($"Total de registros processados do TXT: {registros.Count}");
-
-            return registros;
-        }
-
-        private List<AdministrativoModel> ProcessarArquivoExcel(IFormFile arquivoExcel)
-        {
-            var registros = new List<AdministrativoModel>();
-
-            using (var stream = arquivoExcel.OpenReadStream())
-            {
-                var workbook = new HSSFWorkbook(stream); // Para arquivos .xls
-                var sheet = workbook.GetSheetAt(0); // Pega a primeira aba
-
-                for (int rowIdx = 1; rowIdx <= sheet.LastRowNum; rowIdx++) // Começa da linha 1 para ignorar cabeçalho
-                {
-                    var row = sheet.GetRow(rowIdx);
-                    if (row == null) continue;
-
-                    var administrativo = new AdministrativoModel
-                    {
-                        Acoluna1 = row.GetCell(2)?.ToString() ?? "",
-                        Acoluna2 = row.GetCell(3)?.ToString()?.PadLeft(10, '0') ?? "0000000000",
-                        Acoluna3 = row.GetCell(4)?.ToString() ?? "",
-                        Acoluna4 = row.GetCell(12)?.ToString() ?? "",
-                        Acoluna5 = _preenchimento.MapearVinculo(row.GetCell(13)?.ToString() ?? ""),
-                        Acoluna6 = row.GetCell(14)?.ToString() ?? "",
-                    };
-
-                    registros.Add(administrativo);
-                }
-            }
-
-            // Log para saber quantos registros foram processados
-            Console.WriteLine($"Total de registros processados do Excel: {registros.Count}");
-
-            return registros;
-        }
-
-        private async Task ProcessarDiscrepancias(string nomeArquivo, bool atualizarExistentes)
-        {
-            var desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-            var filePath = Path.Combine(desktopPath, nomeArquivo);
-
-            if (!System.IO.File.Exists(filePath))
-            {
-                Console.WriteLine($"Arquivo {nomeArquivo} não encontrado. Nenhuma ação realizada.");
-                return;
-            }
-
-            var linhas = await System.IO.File.ReadAllLinesAsync(filePath);
-            foreach (var linha in linhas)
-            {
-                var colunas = linha.Split(';').Select(c => c.Trim()).ToArray();
-
-                // Criar um novo objeto para o modelo Administrativo
-                var novoAdministrativo = new AdministrativoModel
-                {
-                    Acoluna1 = colunas[1],
-                    Acoluna2 = colunas[2],
-                    Acoluna3 = colunas[3],
-                    Acoluna4 = colunas[4],
-                    Acoluna5 = colunas[5],
-                    Acoluna6 = colunas[6],
-
-                };
-                Console.WriteLine($"Inserindo: {novoAdministrativo.Acoluna2}, {novoAdministrativo.Acoluna3},{novoAdministrativo.Acoluna4}");
-
-                // Verificar se o registro já existe
-                var registroExistente = _context.Administrativo
-                         .AsNoTracking() // Evita problemas de cache
-                         .FirstOrDefault(a => a.Acoluna1.Trim() == novoAdministrativo.Acoluna1.Trim() &&
-                         a.Acoluna2.Trim() == novoAdministrativo.Acoluna2.Trim());
-
-
-                if (registroExistente != null && atualizarExistentes)
-                {
-                    // Atualizar registro existente
-                    registroExistente.Acoluna3 = novoAdministrativo.Acoluna3;
-                    registroExistente.Acoluna4 = novoAdministrativo.Acoluna4;
-                    registroExistente.Acoluna5 = novoAdministrativo.Acoluna5;
-                    registroExistente.Acoluna6 = novoAdministrativo.Acoluna6;
-                }
-                else if (registroExistente == null)
-                {
-                    // Inserir novos registros
-                    _context.Administrativo.Add(novoAdministrativo);
-                }
-            }
-
-            // Salvar alterações no banco
-            await _context.SaveChangesAsync();
-            Console.WriteLine($"Processamento do arquivo {nomeArquivo} concluído com sucesso.");
-        }
-
-        private async Task InserirNovosServidores(string nomeArquivo)
-        {
-            await ProcessarDiscrepancias(nomeArquivo, atualizarExistentes: false);
-        }
-
-        private async Task AtualizarBancoComDiscrepancias(string nomeArquivo)
-        {
-            await ProcessarDiscrepancias(nomeArquivo, atualizarExistentes: true);
-        }
-
-
     }
 }
