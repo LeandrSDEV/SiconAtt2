@@ -16,23 +16,19 @@
     <div class="w-50 my-3 m-auto">
         <label for="StatusSelecionado" class="form-label">Município:</label>
         <select asp-for="StatusSelecionado" class="form-select" asp-items="ViewBag.Statuses">
-            <option value=""> < --- Selecione o município  --- ></></option>
+            <option value=""> < --- Selecione o município  --- ></option>
         </select>
     </div>
-
-    <br /><br />
 
     <div class="d-flex justify-content-between">
         <div class="txtcss">
             <label for="arquivoTxt" class="form-label">Arquivo Contracheque:</label>
             <input type="file" id="arquivoTxt" name="arquivoTxt" accept=".txt" class="form-control" />
-            <span id="uploadStatus" class="text-success"></span>
         </div>
 
         <div class="excelcss">
             <label for="arquivoExcel" class="form-label">Arquivo Administrador:</label>
             <input type="file" id="arquivoExcel" name="arquivoExcel" accept=".xlsx" class="form-control" />
-            <span id="uploadStatus" class="text-success"></span>
         </div>
     </div>
 

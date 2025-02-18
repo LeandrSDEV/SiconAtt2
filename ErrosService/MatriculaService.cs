@@ -1,8 +1,5 @@
-﻿using System.Linq;
-using System.IO;
-using System.Threading.Tasks;
+﻿using Microsoft.EntityFrameworkCore;
 using Servidor.Data;
-using Microsoft.EntityFrameworkCore;
 
 public class MatriculaService
 {
@@ -15,126 +12,121 @@ public class MatriculaService
 
     public async Task GerarMatriculasAsync()
     {
-        // Carregar os dados das tabelas ordenadas
-        var TabelaTxt = await _context.Contracheque
-            .OrderBy(c => c.Ccoluna2.TrimStart('0'))
-            .ThenBy(c => c.Ccoluna3.TrimStart('0'))
-            .ToListAsync();
+        // Carregar os dados das tabelas
+        var contracheque = await _context.Contracheque.ToListAsync();
+        var administrativo = await _context.Administrativo.ToListAsync();
 
-        var TabelaExcel = await _context.Administrativo
-            .OrderBy(a => a.Acoluna1.TrimStart('0'))
-            .ThenBy(a => a.Acoluna2.TrimStart('0'))
-            .ToListAsync();
-
-        // Preparar uma lista para armazenar as discrepâncias
-        var discrepancias = new List<(string Ccoluna2, string Acoluna2, string Ccoluna3)>();
-
-        // Agrupar os dados por CPF para processar cada grupo
-        var gruposContracheque = TabelaTxt
-            .GroupBy(c => c.Ccoluna2.TrimStart('0'))
-            .ToDictionary(g => g.Key, g => g.OrderBy(c => c.Ccoluna3.TrimStart('0')).ToList());
-
-        var gruposAdministrativo = TabelaExcel
-            .GroupBy(a => a.Acoluna1.TrimStart('0'))
-            .ToDictionary(g => g.Key, g => g.OrderBy(a => a.Acoluna2.TrimStart('0')).ToList());
-
-        // Verificar discrepâncias entre Contracheque e Administrativo
-        foreach (var grupo in gruposContracheque)
-        {
-            var cpf = grupo.Key;
-            var contracheques = grupo.Value;
-
-            if (gruposAdministrativo.TryGetValue(cpf, out var administrativos))
+        // Concatenar colunas e remover zeros à esquerda
+        var contrachequeConcatenado = contracheque
+            .Select(c => new
             {
-                // Ajustar para comparar apenas o mínimo de linhas correspondentes
-                var count = Math.Min(contracheques.Count, administrativos.Count);
-
-                for (int i = 0; i < count; i++)
-                {
-                    var matriculaContracheque = contracheques[i].Ccoluna3.TrimStart('0');
-                    var matriculaAdministrativo = administrativos[i].Acoluna2.TrimStart('0');
-
-                    // Registrar discrepância apenas se as matrículas não forem iguais
-                    if (matriculaContracheque != matriculaAdministrativo)
-                    {
-                        discrepancias.Add((
-                            Ccoluna2: cpf,
-                            Acoluna2: matriculaAdministrativo,
-                            Ccoluna3: matriculaContracheque
-                        ));
-                    }
-                }
-
-                // Ignorar linhas extras no Administrativo
-                // Nenhuma ação é necessária aqui
-            }
-            else
-            {
-                // Caso o CPF do Contracheque não exista no Administrativo
-                foreach (var contracheque in contracheques)
-                {
-                    discrepancias.Add((
-                        Ccoluna2: cpf,
-                        Acoluna2: "Não encontrado no Administrativo",
-                        Ccoluna3: contracheque.Ccoluna3.TrimStart('0')
-                    ));
-                }
-            }
-        }
-
-        // Se não houver discrepâncias, encerrar a execução
-        if (!discrepancias.Any())
-        {
-            Console.WriteLine("Nenhuma discrepância encontrada. Arquivo não foi gerado.");
-            return;
-        }
-
-        // Ordenar as discrepâncias por CPF e matrícula para garantir a ordem correta
-        var discrepanciasOrdenadas = discrepancias
-            .OrderBy(d => d.Ccoluna2)  // Ordena pelo CPF
-            .ThenBy(d => d.Acoluna2)  // Ordena pela matrícula do Administrativo
+                CPF = c.Ccoluna2.Trim(),
+                ValorOriginal = c.Ccoluna3.TrimStart('0'), // Removendo zeros à esquerda
+                ValorConcatenado = $"{c.Ccoluna2.Trim()}{c.Ccoluna3.TrimStart('0')}"
+            })
             .ToList();
 
-        // Gerar o arquivo MATRICULA.txt
-        var desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-        var filePath = Path.Combine(desktopPath, "MATRICULA.txt");
-
-        // Escrever as discrepâncias finais no arquivo
-        await using (var writer = new StreamWriter(filePath))
-        {
-            foreach (var discrepancia in discrepanciasOrdenadas)
+        var administrativoConcatenado = administrativo
+            .Select(a => new
             {
-                await writer.WriteLineAsync($"{discrepancia.Ccoluna2};{discrepancia.Acoluna2};{discrepancia.Ccoluna3}");
+                CPF = a.Acoluna1.Trim(),
+                ValorOriginal = a.Acoluna2.TrimStart('0'), // Removendo zeros à esquerda
+                ValorConcatenado = $"{a.Acoluna1.Trim()}{a.Acoluna2.TrimStart('0')}"
+            })
+            .ToList();
+
+        // Listas de discrepâncias
+        var discrepancias = new List<(string CPF, string ValorOriginal, string ValorNovo)>();
+
+        // Etapa 2: Remover registros iguais
+        var contrachequeRestante = contrachequeConcatenado
+            .Where(c => !administrativoConcatenado.Any(a => a.ValorConcatenado == c.ValorConcatenado))
+            .ToList();
+
+        var administrativoRestante = administrativoConcatenado
+            .Where(a => !contrachequeConcatenado.Any(c => c.ValorConcatenado == a.ValorConcatenado))
+            .ToList();
+
+        // Etapa 3: Substituir valores únicos
+        var cpfsUnicosContracheque = contrachequeRestante
+            .GroupBy(c => c.CPF)
+            .Where(g => g.Count() == 1)
+            .Select(g => g.Key);
+
+        foreach (var cpf in cpfsUnicosContracheque)
+        {
+            var valorContracheque = contrachequeRestante.First(c => c.CPF == cpf);
+            var valorAdministrativo = administrativoRestante.FirstOrDefault(a => a.CPF == cpf);
+
+            if (valorAdministrativo != null)
+            {
+                discrepancias.Add((cpf, valorAdministrativo.ValorOriginal, valorContracheque.ValorOriginal));
+                administrativoRestante.Remove(valorAdministrativo);
             }
         }
 
-        // Verificar se o arquivo foi gerado corretamente
-        if (new FileInfo(filePath).Length == 0)
+        // Etapa 4 e 5: Tratar valores múltiplos
+        var cpfsDuplicadosContracheque = contrachequeRestante
+            .GroupBy(c => c.CPF)
+            .Where(g => g.Count() > 1)
+            .Select(g => g.Key);
+
+        foreach (var cpf in cpfsDuplicadosContracheque)
         {
-            File.Delete(filePath); // Excluir o arquivo vazio
-            Console.WriteLine("Arquivo vazio detectado e excluído.");
-            return;
-        }
+            var valoresContracheque = contrachequeRestante.Where(c => c.CPF == cpf).ToList();
+            var valoresAdministrativo = administrativoRestante.Where(a => a.CPF == cpf).ToList();
 
-        Console.WriteLine($"Arquivo salvo em: {filePath}");
-
-        // Atualizar os valores no banco de dados com as discrepâncias encontradas
-        foreach (var discrepancia in discrepanciasOrdenadas)
-        {
-            var administrativoParaAtualizar = TabelaExcel.FirstOrDefault(a =>
-                a.Acoluna1.TrimStart('0') == discrepancia.Ccoluna2 &&
-                a.Acoluna2.TrimStart('0') == discrepancia.Acoluna2);
-
-            if (administrativoParaAtualizar != null)
+            for (int i = 0; i < Math.Min(valoresContracheque.Count, valoresAdministrativo.Count); i++)
             {
-                // Atualizar a matrícula
-                administrativoParaAtualizar.Acoluna2 = discrepancia.Ccoluna3;
+                discrepancias.Add((
+                    cpf,
+                    valoresAdministrativo[i].ValorOriginal,
+                    valoresContracheque[i].ValorOriginal
+                ));
+
+                administrativoRestante.Remove(valoresAdministrativo[i]);
             }
         }
 
-        // Salvar alterações no banco
+        // Etapa 7: Gerar o arquivo de discrepâncias apenas se houver conteúdo
+        if (discrepancias.Any())
+        {
+            var desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            var filePath = Path.Combine(desktopPath, "MATRICULA.txt");
+
+            await using (var writer = new StreamWriter(filePath))
+            {
+                foreach (var discrepancia in discrepancias)
+                {
+                    // Gerar apenas CPF, valor original, e valor novo, sem zeros à esquerda
+                    await writer.WriteLineAsync($"{discrepancia.CPF};{discrepancia.ValorOriginal};{discrepancia.ValorNovo}");
+                }
+            }
+
+            Console.WriteLine($"Arquivo de discrepâncias salvo em: {filePath}");
+        }
+        else
+        {
+            Console.WriteLine("Nenhuma discrepância encontrada. Arquivo não gerado.");
+        }
+
+        // Etapa 8: Atualizar os valores no banco de dados
+        foreach (var discrepancia in discrepancias)
+        {
+            // Localizar o registro correspondente no Administrativo
+            var registroParaAtualizar = administrativo.FirstOrDefault(a =>
+                a.Acoluna1.Trim() == discrepancia.CPF &&
+                a.Acoluna2.TrimStart('0') == discrepancia.ValorOriginal);
+
+            if (registroParaAtualizar != null)
+            {
+                // Atualizar o valor na tabela Administrativo
+                registroParaAtualizar.Acoluna2 = discrepancia.ValorNovo.PadLeft(6, '0'); // Opcional: ajustar formato, se necessário
+            }
+        }
+
+        // Salvar as alterações no banco de dados
         await _context.SaveChangesAsync();
         Console.WriteLine("Tabela Administrativo atualizada com sucesso.");
     }
-
 }

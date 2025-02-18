@@ -63,12 +63,13 @@ namespace Servidor.Controllers
         {
             var model = new EnumModel();
             var statusList = Enum.GetValues(typeof(Status))
-                                 .Cast<Status>()
-                                 .Select(s => new SelectListItem
-                                 {
-                                     Value = ((int)s).ToString(),
-                                     Text = s.ToString()
-                                 }).ToList();
+                           .Cast<Status>()
+                           .Select(s => new SelectListItem
+                           {
+                               Value = ((int)s).ToString(),
+                               Text = GetMunicipioDisplayName(s)
+                           })
+                           .ToList();
             ViewBag.Statuses = statusList;
             return View(model);
         }
@@ -223,5 +224,23 @@ namespace Servidor.Controllers
 
             return RedirectToAction("Index");
         }
+
+        private string GetMunicipioDisplayName(Status status)
+        {
+            switch (status)
+            {
+                case Status.PREF_Abare_BA: return "Município de Abaré/BA";
+                case Status.PREF_Cupira_PE: return "Município de Cupira/PE";
+                case Status.PREF_Cansanção_BA: return "Município de Cansanção/BA";
+                case Status.PREF_XiqueXique_BA: return "Município de XiqueXique/BA";
+                case Status.PREF_Alcinópolis_BA: return "Município de Alcinópolis/BA";
+                case Status.PREF_Cafarnaum_BA: return "Município de Cafarnaum/BA";
+                case Status.PREF_Anadia_AL: return "Município de Anadia/AL";
+                case Status.PREF_Indiaporã_SP: return "Município de Indiaporã/SP";
+                case Status.PREF_GirauDoPonciano: return "Município de Girau do Ponciano/AL";
+                default: return "Selecione o Município";
+            }
+        }
     }
+
 }

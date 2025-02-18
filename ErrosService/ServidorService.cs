@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Servidor.Data;
+using Servidor.Models;
 
 public class ServidorService
 {
@@ -13,20 +14,19 @@ public class ServidorService
     public async Task GerarEncontradoAsync()
     {
         // Carregar os dados das tabelas
-        var contracheques = await _context.Contracheque.ToListAsync();
-        var administrativos = await _context.Administrativo.ToListAsync();
+        var contracheques = await _context.Contracheque.AsNoTracking().ToListAsync();
+        var administrativos = await _context.Administrativo.AsNoTracking().ToListAsync();
 
-        // Normalizar Acoluna1 removendo zeros à esquerda
+        // Normalizar os dados
         var administrativosNormalizados = administrativos
-            .Select(a => a.Acoluna1.TrimStart('0'))
+            .Select(a => a.Acoluna1?.TrimStart('0').Trim())
             .ToList();
 
-        // Criar listas para facilitar contagem de ocorrências
         var cColuna2List = contracheques
-            .Select(c => c.Ccoluna2.TrimStart('0').Trim())
+            .Select(c => c.Ccoluna2?.TrimStart('0').Trim())
             .ToList();
 
-        var discrepancias = new List<dynamic>();
+        var discrepancias = new List<ContrachequeModel>();
 
         // Identificar valores duplicados em Ccoluna2
         var duplicatasCcoluna2 = cColuna2List
@@ -43,28 +43,47 @@ public class ServidorService
                 // Quantidade extra que não tem correspondência em Acoluna1
                 int quantidadeExtra = duplicata.QuantidadeC - ocorrenciasEmAdministrativo;
 
-                // Adiciona exatamente a quantidade extra ao arquivo e ao banco
+                // Filtrar as linhas extras
                 var linhasExtras = contracheques
-                    .Where(c => c.Ccoluna2.TrimStart('0').Trim() == duplicata.Valor)
-                    .Take(quantidadeExtra);
+                    .Where(c => c.Ccoluna2?.TrimStart('0').Trim() == duplicata.Valor)
+                    .ToList();
 
-                discrepancias.AddRange(linhasExtras);
-
-                // Adicionar as linhas extras diretamente no banco de dados
+                // Adicionar as linhas extras ao banco de dados e ao arquivo
                 foreach (var linha in linhasExtras)
                 {
-                    var novaLinha = new Servidor.Models.AdministrativoModel
-                    {
-                        Acoluna1 = linha.Ccoluna2,
-                        Acoluna2 = linha.Ccoluna3,
-                        Acoluna3 = linha.Ccoluna4,
-                        Acoluna4 = linha.Ccoluna21,
-                        Acoluna5 = linha.Ccoluna16,
-                        Acoluna6 = linha.Ccoluna18
-                    };
+                    // Comparar a combinação Ccoluna2 + Ccoluna3 com Acoluna1 + Acoluna2
+                    var correspondente = administrativos
+                        .FirstOrDefault(a => (a.Acoluna1 + a.Acoluna2)?.Trim() == (linha.Ccoluna2 + linha.Ccoluna3)?.Trim());
 
-                    Console.WriteLine($"Adicionando ao banco: {novaLinha.Acoluna1}, {novaLinha.Acoluna2}, {novaLinha.Acoluna3}");
-                    _context.Administrativo.Add(novaLinha);
+                    if (correspondente == null)
+                    {
+                        // Se não encontrar correspondência exata, registra a discrepância
+                        Console.WriteLine($"Discrepância encontrada: {linha.Ccoluna2};{linha.Ccoluna3}");
+
+                        discrepancias.Add(linha);
+
+                        // Adiciona a linha ao banco de dados
+                        bool exists = _context.Administrativo.Any(a => a.Acoluna1 == linha.Ccoluna2);
+                        if (!exists)
+                        {
+                            var novaLinha = new AdministrativoModel
+                            {
+                                Acoluna1 = linha.Ccoluna2,
+                                Acoluna2 = linha.Ccoluna3,
+                                Acoluna3 = linha.Ccoluna4,
+                                Acoluna4 = linha.Ccoluna21,
+                                Acoluna5 = linha.Ccoluna16,
+                                Acoluna6 = linha.Ccoluna18
+                            };
+
+                            Console.WriteLine($"Adicionando ao banco: {novaLinha.Acoluna1}, {novaLinha.Acoluna2}, {novaLinha.Acoluna3}");
+                            _context.Administrativo.Add(novaLinha);
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Encontrado correspondente para: {linha.Ccoluna2};{linha.Ccoluna3}");
+                    }
                 }
             }
         }
@@ -107,15 +126,35 @@ public class ServidorService
         }
     }
 
-    private string FormatarLinha(dynamic c)
+    private string FormatarLinha(ContrachequeModel c)
     {
         return string.Join(';', new[]
         {
-            c.Ccoluna1, c.Ccoluna2, c.Ccoluna3, c.Ccoluna4, c.Ccoluna5,
-            c.Ccoluna6, c.Ccoluna7, c.Ccoluna8, c.Ccoluna9, c.Ccoluna10,
-            c.Ccoluna11, c.Ccoluna12, c.Ccoluna13, c.Ccoluna14, c.Ccoluna15,
-            c.Ccoluna16, c.Ccoluna17, c.Ccoluna18, c.Ccoluna19, c.Ccoluna20,
-            c.Ccoluna21, c.Ccoluna22, c.Ccoluna23, c.Ccoluna24, c.Ccoluna25
+            c.Ccoluna1 ?? "",
+            c.Ccoluna2 ?? "",
+            c.Ccoluna3 ?? "",
+            c.Ccoluna4 ?? "",
+            c.Ccoluna5 ?? "",
+            c.Ccoluna6 ?? "",
+            c.Ccoluna7 ?? "",
+            c.Ccoluna8 ?? "",
+            c.Ccoluna9 ?? "",
+            c.Ccoluna10 ?? "",
+            c.Ccoluna11 ?? "",
+            c.Ccoluna12 ?? "",
+            c.Ccoluna13 ?? "",
+            c.Ccoluna14 ?? "",
+            c.Ccoluna15 ?? "",
+            c.Ccoluna16 ?? "",
+            c.Ccoluna17 ?? "",
+            c.Ccoluna18 ?? "",
+            c.Ccoluna19 ?? "",
+            c.Ccoluna20 ?? "",
+            c.Ccoluna21 ?? "",
+            c.Ccoluna22 ?? "",
+            c.Ccoluna23 ?? "",
+            c.Ccoluna24 ?? "",
+            c.Ccoluna25 ?? ""
         });
     }
 }
