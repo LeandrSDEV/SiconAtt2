@@ -70,16 +70,11 @@ public class AnadiaService
 
         switch (contracheque.Ccoluna16)
         {
-            case "7":
-            case "13":
-            case "5":
-                contracheque.Ccoluna18 = "329";
-                break;
             case "2":
                 contracheque.Ccoluna18 = "171";
                 break;
             default:
-                contracheque.Ccoluna18 = "ERRO";
+                contracheque.Ccoluna18 = "329";
                 break;
         }
 
@@ -128,18 +123,13 @@ public class GiraDoPoncianoService
 
         switch (contracheque.Ccoluna16)
         {
-            case "7":
-            case "13":
-            case "5":
-                contracheque.Ccoluna18 = "743";
-                break;
             case "2":
             case "1":
             case "4":
                 contracheque.Ccoluna18 = "793";
                 break;
             default:
-                contracheque.Ccoluna18 = "ERRO";
+                contracheque.Ccoluna18 = "743";
                 break;
         }
 

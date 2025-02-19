@@ -61,17 +61,19 @@ namespace Servidor.Controllers
 
         public IActionResult Index()
         {
-            var model = new EnumModel();
-            var statusList = Enum.GetValues(typeof(Status))
-                           .Cast<Status>()
-                           .Select(s => new SelectListItem
-                           {
-                               Value = ((int)s).ToString(),
-                               Text = GetMunicipioDisplayName(s)
-                           })
-                           .ToList();
-            ViewBag.Statuses = statusList;
-            return View(model);
+            // Cria uma lista de SelectListItem a partir do enum Status
+            var statuses = Enum.GetValues(typeof(Status))
+                .Cast<Status>()
+                .Select(s => new SelectListItem
+                {
+                    Value = ((int)s).ToString(),  // O valor que será enviado no form
+                    Text = GetMunicipioDisplayName(s)  // O nome que será exibido na lista
+                })
+                .ToList();
+
+            // Passa a lista para a view
+            ViewBag.Statuses = statuses;
+            return View();
         }
 
         [HttpPost]
@@ -94,7 +96,7 @@ namespace Servidor.Controllers
                     { Status.PREF_Cupira_PE, colunas => _cupiraservice.ProcessarArquivoAsync(colunas, Status.PREF_Cupira_PE) },
                     { Status.PREF_Cansanção_BA, colunas => _cansancaoservice.ProcessarArquivoAsync(colunas, Status.PREF_Cansanção_BA) },
                     { Status.PREF_XiqueXique_BA, colunas => _xiquexiqueservice.ProcessarArquivoAsync(colunas, Status.PREF_XiqueXique_BA) },
-                    { Status.PREF_Alcinópolis_BA, colunas => _alcinopolisService.ProcessarArquivoAsync(colunas, Status.PREF_Alcinópolis_BA) },
+                    { Status.PREF_Alcinópolis_MS, colunas => _alcinopolisService.ProcessarArquivoAsync(colunas, Status.PREF_Alcinópolis_MS) },
                     { Status.PREF_Cafarnaum_BA, colunas => _cafarnaumService.ProcessarArquivoAsync(colunas, Status.PREF_Cafarnaum_BA) },
                     { Status.PREF_Indiaporã_SP, colunas => _IndiaporaService.ProcessarArquivoAsync(colunas, Status.PREF_Indiaporã_SP) },
                     { Status.PREF_Anadia_AL, colunas => _anadiaService.ProcessarArquivoAsync(colunas, Status.PREF_Anadia_AL) },
@@ -220,7 +222,7 @@ namespace Servidor.Controllers
 
             await _perfilCalculo.GeradorPerfilCalculo(status.StatusSelecionado);
 
-            await _cleanupService.LimparTabelasAsync();
+            //await _cleanupService.LimparTabelasAsync();
 
             return RedirectToAction("Index");
         }
@@ -233,7 +235,7 @@ namespace Servidor.Controllers
                 case Status.PREF_Cupira_PE: return "Município de Cupira/PE";
                 case Status.PREF_Cansanção_BA: return "Município de Cansanção/BA";
                 case Status.PREF_XiqueXique_BA: return "Município de XiqueXique/BA";
-                case Status.PREF_Alcinópolis_BA: return "Município de Alcinópolis/BA";
+                case Status.PREF_Alcinópolis_MS: return "Município de Alcinópolis/BA";
                 case Status.PREF_Cafarnaum_BA: return "Município de Cafarnaum/BA";
                 case Status.PREF_Anadia_AL: return "Município de Anadia/AL";
                 case Status.PREF_Indiaporã_SP: return "Município de Indiaporã/SP";

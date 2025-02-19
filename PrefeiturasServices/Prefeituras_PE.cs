@@ -66,20 +66,13 @@ public class CupiraService
         }
 
         switch (contracheque.Ccoluna16)
-        {
-            case "7":
-            case "13":
-            case "5":
-            case "28":
-            case "1":
-                contracheque.Ccoluna18 = "943";
-                break;
+        {           
             case "33":
             case "2":
                 contracheque.Ccoluna18 = "926";
                 break;
             default:
-                contracheque.Ccoluna18 = "ERRO";
+                contracheque.Ccoluna18 = "943";
                 break;
         }
 

@@ -103,10 +103,10 @@ public class SecretariaService
         return statusSelecionado switch
         {
             Status.PREF_Cupira_PE =>
-                (c.Ccoluna21 == "1" && acoluna4 != "PREFEITURA") ||
-                (c.Ccoluna21 == "3" && acoluna4 != "EDUCAÇÃO"),
+                (c.Ccoluna21 == "1" && acoluna4 != "PREFEITURA" && acoluna4 != "1") ||
+                (c.Ccoluna21 == "3" && acoluna4 != "EDUCAÇÃO" && acoluna4 != "3"),
 
-            Status.PREF_Alcinópolis_BA =>
+            Status.PREF_Alcinópolis_MS =>
                 (c.Ccoluna21 == "1" && acoluna4 != "MUNICÍPIO DE ALCINÓPOLIS/MS") ||
                 (c.Ccoluna21 == "2" && acoluna4 != "FUNDO MUNICIPAL DE EDUCAÇÃO"),
 
@@ -114,7 +114,6 @@ public class SecretariaService
                 (c.Ccoluna21 == "1" && acoluna4 != "PREFEITURA MUNICIPAL DE CANSANCAO"),
 
             Status.PREF_Abare_BA =>
-                // Verifica se Acoluna4 é "PREFEITURA" ou "1" com comparação precisa
                 (c.Ccoluna21 == "1" && acoluna4 != "PREFEITURA" && acoluna4 != "1"),
 
             Status.PREF_Cafarnaum_BA =>

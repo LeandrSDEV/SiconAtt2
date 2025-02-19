@@ -66,19 +66,12 @@ public class AbareService
         }
 
         switch (contracheque.Ccoluna16)
-        {
-            case "7":
-            case "13":
-            case "5":
-            case "17":
-            case "11":
-                contracheque.Ccoluna18 = "679";
-                break;
+        {           
             case "2":
                 contracheque.Ccoluna18 = "678";
                 break;
             default:
-                contracheque.Ccoluna18 = "ERRO";
+                contracheque.Ccoluna18 = "679";
                 break;
         }
 
@@ -115,17 +108,9 @@ public class XiqueXiqueService
         }
 
         switch (contracheque.Ccoluna16)
-        {
-            case "10":
-            case "13":
-            case "33":
-            case "7":
-            case "11":
-            case "17":
-                contracheque.Ccoluna18 = "265";
-                break;
+        {            
             default:
-                contracheque.Ccoluna18 = "ERRO";
+                contracheque.Ccoluna18 = "265";
                 break;
         }
 
@@ -164,18 +149,12 @@ public class CafarnaumService
 
         switch (contracheque.Ccoluna16)
         {
-            case "7":
-            case "17":
-            case "13":
-            case "11":
-                contracheque.Ccoluna18 = "937";
-                break;
             case "1":
             case "10":
                 contracheque.Ccoluna18 = "936";
                 break;
             default:
-                contracheque.Ccoluna18 = "ERRO";
+                contracheque.Ccoluna18 = "937";
                 break;
         }
 
@@ -214,17 +193,11 @@ public class CansancaoService
 
         switch (contracheque.Ccoluna16)
         {
-            case "11":
-            case "13":
-            case "7":
-            case "17":
-                contracheque.Ccoluna18 = "833";
-                break;
             case "10":
                 contracheque.Ccoluna18 = "128";
                 break;
             default:
-                contracheque.Ccoluna18 = "ERRO";
+                contracheque.Ccoluna18 = "833";
                 break;
         }
 

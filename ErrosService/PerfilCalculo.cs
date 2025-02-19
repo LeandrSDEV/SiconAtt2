@@ -31,15 +31,25 @@ namespace Servidor.ErrosService
                 // Lógica para determinar o valor esperado com base no statusSelecionado
                 var valorResultado = statusSelecionado switch
                 {
+                    Status.PREF_Cupira_PE => linha.Acoluna5.Trim() switch
+                    {
+                        "33" => "926",
+                        "2" => "926",
+                        _ => "943"
+                    },
+                    Status.PREF_Alcinópolis_MS => linha.Acoluna5.Trim() switch
+                    {
+                        _ => "794"
+                    },
+                    Status.PREF_Cansanção_BA => linha.Acoluna5.Trim() switch
+                    {
+                        "10" => "128",
+                        _ => "833"
+                    },
                     Status.PREF_Abare_BA => linha.Acoluna5.Trim() switch
                     {
                         "2" => "678",
                         _ => "679"
-                    },
-                    Status.PREF_Anadia_AL => linha.Acoluna5.Trim() switch
-                    {
-                        "2" => "171",
-                        _ => "329"
                     },
                     Status.PREF_Cafarnaum_BA => linha.Acoluna5.Trim() switch
                     {
@@ -47,6 +57,15 @@ namespace Servidor.ErrosService
                         "10" => "936",
                         _ => "937"
                     },
+                    Status.PREF_Indiaporã_SP => linha.Acoluna5.Trim() switch
+                    {                       
+                        _ => "294"
+                    },
+                    Status.PREF_Anadia_AL => linha.Acoluna5.Trim() switch
+                    {
+                        "2" => "171",
+                        _ => "329"
+                    },              
                     Status.PREF_GirauDoPonciano => linha.Acoluna5.Trim() switch
                     {
                         "1" => "793",

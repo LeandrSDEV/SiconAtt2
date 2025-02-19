@@ -70,16 +70,9 @@ public class AlcinopolisService
         }
 
         switch (contracheque.Ccoluna16)
-        {
-            case "7":
-            case "2":
-            case "17":
-            case "13":
-            case "5":
-                contracheque.Ccoluna18 = "794";
-                break;
+        {           
             default:
-                contracheque.Ccoluna18 = "ERRO";
+                contracheque.Ccoluna18 = "794";
                 break;
         }
 
