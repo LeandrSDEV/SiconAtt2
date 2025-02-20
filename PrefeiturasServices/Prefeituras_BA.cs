@@ -18,11 +18,11 @@ public class ContrachequeBA
             Ccoluna9 = municipio,
             Ccoluna10 = "BA",
             Ccoluna11 = "99999999",
-            Ccoluna12 = "0",
-            Ccoluna13 = "0",
+            Ccoluna12 = "99999999999",
+            Ccoluna13 = "99999999999",
             Ccoluna14 = "99999999999",
             Ccoluna15 = colunas[9],
-            Ccoluna16 = colunas[16],
+            Ccoluna16 = string.IsNullOrEmpty(colunas[16]) ? "14" : colunas[16],
             Ccoluna17 = "0",
             Ccoluna18 = colunas[18],
             Ccoluna19 = "0",
@@ -204,4 +204,141 @@ public class CansancaoService
         return Task.FromResult(new List<ContrachequeModel> { contracheque });
     }
    
+}
+//======================================    CATU    ============================================\\
+
+public class CatuService
+{
+    private static readonly Dictionary<string, string> MapeamentoStatus = new()
+    {
+       { "Estatutario", "10" },
+       { "Regime Administrativo", "18" },
+       { "Comissionado", "7" },
+       { "Estagiario", "8" },
+       { "Agente Politico", "13" },
+       { "Aposentado", "4" },
+       { "CONSELHO TUTELAR", "17" },
+       
+    };
+
+    public Task<List<ContrachequeModel>> ProcessarArquivoAsync(string[] colunas, Status status)
+    {
+        var contracheque = ContrachequeBA.CriarContracheque(colunas, "CATU");
+
+        if (contracheque.Ccoluna1 == "PREFEITURA MUNICIPAL DE CATU")
+        {
+            contracheque.Ccoluna19 = "1";
+        }
+
+        // Verifica e atualiza Ccoluna16 com base no mapeamento
+        if (MapeamentoStatus.ContainsKey(colunas[16].Trim()))
+        {
+            contracheque.Ccoluna16 = MapeamentoStatus[colunas[16].Trim()];
+        }
+
+        switch (contracheque.Ccoluna16)
+        {
+            case "10":
+            case "17":
+                contracheque.Ccoluna18 = "994";
+                break;
+            default:
+                contracheque.Ccoluna18 = "995";
+                break;
+        }
+
+        return Task.FromResult(new List<ContrachequeModel> { contracheque });
+    }
+
+}
+
+//======================================    REMANSO    ============================================\\
+
+public class RemansoService
+{
+    private static readonly Dictionary<string, string> MapeamentoStatus = new()
+    {
+       { "Estatutário - Comissão", "15" },
+       { "Estatutário", "10" },
+       { "Estável", "2" },
+       { "Trabalhador Temporário", "11" },
+       { "Agente Político", "13" },
+       { "Cargo em Comissão", "7" },
+       { "Processo Seletivo", "11" },
+       { "Conselho Tutelar", "17" },
+       
+    };
+
+    public Task<List<ContrachequeModel>> ProcessarArquivoAsync(string[] colunas, Status status)
+    {
+        var contracheque = ContrachequeBA.CriarContracheque(colunas, "REMANSO");
+
+        if (contracheque.Ccoluna1 == "PREFEITURA MUNICIPAL DE REMANSO")
+        {
+            contracheque.Ccoluna19 = "1";
+        }
+
+        // Verifica e atualiza Ccoluna16 com base no mapeamento
+        if (MapeamentoStatus.ContainsKey(colunas[16].Trim()))
+        {
+            contracheque.Ccoluna16 = MapeamentoStatus[colunas[16].Trim()];
+        }
+
+        switch (contracheque.Ccoluna16)
+        {
+            default:
+                contracheque.Ccoluna18 = "353";
+                break;
+        }
+
+        return Task.FromResult(new List<ContrachequeModel> { contracheque });
+    }
+
+}
+//======================================    SANTA MARIA DA VITORIA    ============================================\\
+
+public class SantaMariaVitoriaService
+{
+    private static readonly Dictionary<string, string> MapeamentoStatus = new()
+    {
+       { "Estatutário", "10" },
+       { "Aposentado", "4" },
+       { "Pensionista", "1" },
+       { "Agente Político", "13" },
+       { "Cargo em Comissão", "7" },
+       { "Trabalhador Temporário", "11" },
+       { "Cedidos", "33" },
+       { "Conselho Tutelar", "17" },
+    };
+
+    public Task<List<ContrachequeModel>> ProcessarArquivoAsync(string[] colunas, Status status)
+    {
+        var contracheque = ContrachequeBA.CriarContracheque(colunas, "SANTA MARIA DA VITORIA");
+
+        if (contracheque.Ccoluna1 == "PREFEITURA DE SANTA MARIA DA VITORIA")
+        {
+            contracheque.Ccoluna19 = "1";
+        }
+
+        if (MapeamentoStatus.ContainsKey(colunas[16].Trim()))
+        {
+            contracheque.Ccoluna16 = MapeamentoStatus[colunas[16].Trim()];
+        }
+
+        switch (contracheque.Ccoluna16)
+        {
+            case "1":
+            case "10":
+            case "4":
+            case "13":
+                contracheque.Ccoluna18 = "1009";
+                break;
+            default:
+                contracheque.Ccoluna18 = "1010";
+                break;
+        }
+
+        return Task.FromResult(new List<ContrachequeModel> { contracheque });
+    }
+
 }

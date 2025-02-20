@@ -18,11 +18,11 @@ public class ContrachequePE
             Ccoluna9 = municipio,
             Ccoluna10 = "PE",
             Ccoluna11 = "99999999",
-            Ccoluna12 = "0",
-            Ccoluna13 = "0",
+            Ccoluna12 = "99999999999",
+            Ccoluna13 = "99999999999",
             Ccoluna14 = "99999999999",
             Ccoluna15 = colunas[9],
-            Ccoluna16 = colunas[16],
+            Ccoluna16 = string.IsNullOrEmpty(colunas[16]) ? "14" : colunas[16],
             Ccoluna17 = "0",
             Ccoluna18 = colunas[18],
             Ccoluna19 = "0",
@@ -161,6 +161,46 @@ public class BodocoService
                 break;
             default:
                 contracheque.Ccoluna18 = "392";
+                break;
+        }
+
+
+        return Task.FromResult(new List<ContrachequeModel> { contracheque });
+    }
+}
+//======================================    FMS - CUPiRA    ============================================\\
+
+public class FMSCupiraService
+{
+    private static readonly Dictionary<string, string> Vinculo = new()
+    {
+        { "Cargo Efetivo", "2" },
+        { "Contratados", "5" },
+        { "SERVIDOR EFETIVO CEDIDO DE OUTRA ENTIDADE", "33" },
+        { "Cargo Comissionado", "7" },
+    };
+
+    public Task<List<ContrachequeModel>> ProcessarArquivoAsync(string[] colunas, Status status)
+    {
+        var contracheque = ContrachequePE.CriarContracheque(colunas, "BODOCO");
+
+        if (contracheque.Ccoluna1 == "FUNDO MUNICIPAL DE SAUDE DE CUPIRA")
+        {
+            contracheque.Ccoluna21 = "3";
+        }
+
+        if (Vinculo.ContainsKey(colunas[16].Trim()))
+        {
+            contracheque.Ccoluna16 = Vinculo[colunas[16].Trim()];
+        }
+
+        switch (contracheque.Ccoluna16)
+        {
+            case "2":
+                contracheque.Ccoluna18 = "928";
+                break;
+            default:
+                contracheque.Ccoluna18 = "996";
                 break;
         }
 

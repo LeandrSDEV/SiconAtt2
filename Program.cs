@@ -21,6 +21,10 @@ builder.Services.AddScoped<AnadiaService>();
 builder.Services.AddScoped<GiraDoPoncianoService>();
 builder.Services.AddScoped<FUNBodocoService>();
 builder.Services.AddScoped<BodocoService>();
+builder.Services.AddScoped<CatuService>();
+builder.Services.AddScoped<RemansoService>();
+builder.Services.AddScoped<FMSCupiraService>();
+builder.Services.AddScoped<SantaMariaVitoriaService>();
 
 builder.Services.AddScoped<MatriculaService>();
 builder.Services.AddScoped<SecretariaService>();

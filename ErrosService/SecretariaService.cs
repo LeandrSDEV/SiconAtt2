@@ -128,6 +128,18 @@ public class SecretariaService
             Status.PREF_Bodoco_PE =>
                 (c.Ccoluna21 == "1" && acoluna4 != "PREFEITURA MUNICIPAL DE BODOCÓ" && acoluna4 != "1"),
 
+            Status.PREF_Remanso_BA =>
+                (c.Ccoluna21 == "1" && acoluna4 != "PREFEITURA MUNICIPAL DE REMANSO" && acoluna4 != "1"),
+
+            Status.PREF_Catu_BA =>
+                (c.Ccoluna21 == "1" && acoluna4 != "MUNICÍPIO DE CATU/BA" && acoluna4 != "1"),
+
+            Status.FMS_Cupira_PE =>
+                (c.Ccoluna21 == "3" && acoluna4 != "FUNDO MUNICIPAL DE SAÚDE DE CUPIRA" && acoluna4 != "3"),
+
+            Status.PREF_SantaMariaDaVitoria_BA =>
+                (c.Ccoluna21 == "1" && acoluna4 != "MUNICÍPIO DE SANTA MARIA DA VITÓRIA/BA" && acoluna4 != "1"),
+
             Status.PREF_Anadia_AL =>
                 (c.Ccoluna21 == "300" && acoluna4 != "PREFEITURA MUNICIPAL DE ANADIA" && acoluna4 != "300") ||
                 (c.Ccoluna21 == "351" && acoluna4 != "FUNDO MUNICIPAL DE SAUDE DE ANADIA" && acoluna4 != "351"),

@@ -13,6 +13,10 @@
         PREF_GirauDoPonciano = 9,  
         FUNPREBO_Bodoco_PE = 10,  
         PREF_Bodoco_PE = 11,  
+        PREF_Catu_BA = 12, 
+        PREF_Remanso_BA = 13, 
+        FMS_Cupira_PE = 14, 
+        PREF_SantaMariaDaVitoria_BA = 15, 
     }
 
 }

@@ -31,6 +31,10 @@ namespace Servidor.Controllers
         private readonly GiraDoPoncianoService _giraDoPoncianoService;
         private readonly FUNBodocoService _fUNBodocoService;
         private readonly BodocoService _bodocoService;
+        private readonly CatuService _catuService;
+        private readonly RemansoService _remansoService;
+        private readonly FMSCupiraService _fMSCupiraService;
+        private readonly SantaMariaVitoriaService _santaMariaVitoriaService;
 
         public ConvenioController(BancoContext context, AbareService abareservice, 
                                   CupiraService cupiraservice, CansancaoService cansancaoservice,
@@ -41,7 +45,9 @@ namespace Servidor.Controllers
                                   IndiaporaService indiaporaService, GeradorDePerfil geradorDePerfil,
                                   AnadiaService anadiaService, PerfilCalculo perfilCalculo,
                                   GiraDoPoncianoService giraDoPoncianoService, FUNBodocoService fUNBodocoService, 
-                                  BodocoService bodocoService)
+                                  BodocoService bodocoService, CatuService catuService,
+                                  RemansoService remansoService, FMSCupiraService fMSCupiraService,
+                                  SantaMariaVitoriaService santaMariaVitoriaService)
         {
             _context = context;
             _servidorService = servidorService;
@@ -62,6 +68,10 @@ namespace Servidor.Controllers
             _giraDoPoncianoService = giraDoPoncianoService;
             _fUNBodocoService = fUNBodocoService;
             _bodocoService = bodocoService;
+            _catuService = catuService;
+            _remansoService = remansoService;
+            _fMSCupiraService = fMSCupiraService;
+            _santaMariaVitoriaService = santaMariaVitoriaService;
         }
 
         public IActionResult Index()
@@ -108,6 +118,10 @@ namespace Servidor.Controllers
                     { Status.PREF_GirauDoPonciano, colunas => _giraDoPoncianoService.ProcessarArquivoAsync(colunas, Status.PREF_GirauDoPonciano) },
                     { Status.FUNPREBO_Bodoco_PE, colunas => _fUNBodocoService.ProcessarArquivoAsync(colunas, Status.FUNPREBO_Bodoco_PE) },
                     { Status.PREF_Bodoco_PE, colunas => _bodocoService.ProcessarArquivoAsync(colunas, Status.PREF_Bodoco_PE) },
+                    { Status.PREF_Catu_BA, colunas => _catuService.ProcessarArquivoAsync(colunas, Status.PREF_Catu_BA) },
+                    { Status.PREF_Remanso_BA, colunas => _remansoService.ProcessarArquivoAsync(colunas, Status.PREF_Remanso_BA) },
+                    { Status.FMS_Cupira_PE, colunas => _fMSCupiraService.ProcessarArquivoAsync(colunas, Status.FMS_Cupira_PE) },
+                    { Status.PREF_SantaMariaDaVitoria_BA, colunas => _santaMariaVitoriaService.ProcessarArquivoAsync(colunas, Status.PREF_SantaMariaDaVitoria_BA) },
 };
 
                 if (serviceMap.TryGetValue(status.StatusSelecionado, out var processarArquivo))
@@ -190,6 +204,7 @@ namespace Servidor.Controllers
                             { "Função Pública Relevante", "29"},
                             { "Estagiario", "8"},
                             { "Aposentado", "4"},
+                            { "Regime Administrativo", "18"},
                         };                      
 
                          //Atualiza Acoluna5 com base no mapeamento
@@ -249,6 +264,10 @@ namespace Servidor.Controllers
                 case Status.PREF_GirauDoPonciano: return "Município de Girau do Ponciano/AL";
                 case Status.FUNPREBO_Bodoco_PE: return "FUNPREBO - Bodocó/PE";
                 case Status.PREF_Bodoco_PE: return "Município de Bodocó/PE";
+                case Status.PREF_Catu_BA: return "Município de Catu/BA";
+                case Status.PREF_Remanso_BA: return "Município de Remanso/BA";
+                case Status.FMS_Cupira_PE: return "Fundo Municipal de Saúde de Cupira/PE";
+                case Status.PREF_SantaMariaDaVitoria_BA: return "Município de Santa Maria da Vitória/BA";
                 default: return "Selecione o Município";
             }
         }

@@ -70,11 +70,34 @@ namespace Servidor.ErrosService
                     {                      
                         _ => "391"
                     },
+                    Status.PREF_Remanso_BA => linha.Acoluna5.Trim() switch
+                    {                   
+                        _ => "353"
+                    },
                     Status.PREF_Bodoco_PE => linha.Acoluna5.Trim() switch
                     {
                         "2" => "390",
                         "1" => "390",
                         _ => "392"
+                    },
+                    Status.FMS_Cupira_PE => linha.Acoluna5.Trim() switch
+                    {
+                        "2" => "928",
+                        _ => "996"
+                    },
+                    Status.PREF_SantaMariaDaVitoria_BA => linha.Acoluna5.Trim() switch
+                    {
+                        "1" => "1009",
+                        "4" => "1009",
+                        "10" => "1009",
+                        "13" => "1009",
+                        _ => "1010"
+                    },
+                    Status.PREF_Catu_BA => linha.Acoluna5.Trim() switch
+                    {
+                        "17" => "994",
+                        "10" => "994",
+                        _ => "995"
                     },
                     Status.PREF_GirauDoPonciano => linha.Acoluna5.Trim() switch
                     {
