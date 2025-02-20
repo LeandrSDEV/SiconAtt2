@@ -25,6 +25,7 @@ builder.Services.AddScoped<CatuService>();
 builder.Services.AddScoped<RemansoService>();
 builder.Services.AddScoped<FMSCupiraService>();
 builder.Services.AddScoped<SantaMariaVitoriaService>();
+builder.Services.AddScoped<FAPENSaoJoseLajeService>();
 
 builder.Services.AddScoped<MatriculaService>();
 builder.Services.AddScoped<SecretariaService>();

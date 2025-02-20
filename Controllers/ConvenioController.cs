@@ -35,6 +35,7 @@ namespace Servidor.Controllers
         private readonly RemansoService _remansoService;
         private readonly FMSCupiraService _fMSCupiraService;
         private readonly SantaMariaVitoriaService _santaMariaVitoriaService;
+        private readonly FAPENSaoJoseLajeService _fAPENSaoJoseLajeService;
 
         public ConvenioController(BancoContext context, AbareService abareservice, 
                                   CupiraService cupiraservice, CansancaoService cansancaoservice,
@@ -47,7 +48,7 @@ namespace Servidor.Controllers
                                   GiraDoPoncianoService giraDoPoncianoService, FUNBodocoService fUNBodocoService, 
                                   BodocoService bodocoService, CatuService catuService,
                                   RemansoService remansoService, FMSCupiraService fMSCupiraService,
-                                  SantaMariaVitoriaService santaMariaVitoriaService)
+                                  SantaMariaVitoriaService santaMariaVitoriaService, FAPENSaoJoseLajeService fAPENSaoJoseLajeService)
         {
             _context = context;
             _servidorService = servidorService;
@@ -72,6 +73,7 @@ namespace Servidor.Controllers
             _remansoService = remansoService;
             _fMSCupiraService = fMSCupiraService;
             _santaMariaVitoriaService = santaMariaVitoriaService;
+            _fAPENSaoJoseLajeService = fAPENSaoJoseLajeService;
         }
 
         public IActionResult Index()
@@ -122,6 +124,7 @@ namespace Servidor.Controllers
                     { Status.PREF_Remanso_BA, colunas => _remansoService.ProcessarArquivoAsync(colunas, Status.PREF_Remanso_BA) },
                     { Status.FMS_Cupira_PE, colunas => _fMSCupiraService.ProcessarArquivoAsync(colunas, Status.FMS_Cupira_PE) },
                     { Status.PREF_SantaMariaDaVitoria_BA, colunas => _santaMariaVitoriaService.ProcessarArquivoAsync(colunas, Status.PREF_SantaMariaDaVitoria_BA) },
+                    { Status.FAPEN_SaoJoseDaSaje_AL, colunas => _fAPENSaoJoseLajeService.ProcessarArquivoAsync(colunas, Status.FAPEN_SaoJoseDaSaje_AL) },
 };
 
                 if (serviceMap.TryGetValue(status.StatusSelecionado, out var processarArquivo))
@@ -268,6 +271,7 @@ namespace Servidor.Controllers
                 case Status.PREF_Remanso_BA: return "Município de Remanso/BA";
                 case Status.FMS_Cupira_PE: return "Fundo Municipal de Saúde de Cupira/PE";
                 case Status.PREF_SantaMariaDaVitoria_BA: return "Município de Santa Maria da Vitória/BA";
+                case Status.FAPEN_SaoJoseDaSaje_AL: return "FAPEN - São José da Laje/AL";
                 default: return "Selecione o Município";
             }
         }

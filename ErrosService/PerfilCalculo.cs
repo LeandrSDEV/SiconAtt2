@@ -85,6 +85,11 @@ namespace Servidor.ErrosService
                         "2" => "928",
                         _ => "996"
                     },
+                    Status.FAPEN_SaoJoseDaSaje_AL => linha.Acoluna5.Trim() switch
+                    {
+                        "1" => "766",
+                        _ => "767"
+                    },
                     Status.PREF_SantaMariaDaVitoria_BA => linha.Acoluna5.Trim() switch
                     {
                         "1" => "1009",

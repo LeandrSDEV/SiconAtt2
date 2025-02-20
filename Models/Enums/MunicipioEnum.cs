@@ -17,6 +17,7 @@
         PREF_Remanso_BA = 13, 
         FMS_Cupira_PE = 14, 
         PREF_SantaMariaDaVitoria_BA = 15, 
+        FAPEN_SaoJoseDaSaje_AL = 16, 
     }
 
 }

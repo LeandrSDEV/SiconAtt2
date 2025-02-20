@@ -138,5 +138,46 @@ public class GiraDoPoncianoService
     }
 
 }
+//======================================    FAPEN - SÃO JOSÉ DA LAJE    ============================================\\
+
+public class FAPENSaoJoseLajeService
+{
+    private static readonly Dictionary<string, string> Vinculo = new()
+    {
+        { "Inativo(a)", "28" },       
+        { "Pensionista", "7" },       
+        { "Cargo em Comissao", "1" },       
+    };
+
+    public Task<List<ContrachequeModel>> ProcessarArquivoAsync(string[] colunas, Status status)
+    {
+        var contracheque = ContrachequeAL.CriarContracheque(colunas, "SAO JOSE DA LAJE");
+
+        if (contracheque.Ccoluna1 == "FUNDO DE APOSENTADORIAS E PENSOES DE SAO JOSE DA LAJE- FAPEN")
+        {
+            contracheque.Ccoluna21 = "1";
+        }
+        
+        if (Vinculo.ContainsKey(colunas[16].Trim()))
+        {
+            contracheque.Ccoluna16 = Vinculo[colunas[16].Trim()];
+        }
+
+        switch (contracheque.Ccoluna16)
+        {           
+            case "1":
+                contracheque.Ccoluna18 = "766";
+                break;
+            default:
+                contracheque.Ccoluna18 = "767";
+                break;
+        }
+
+
+        return Task.FromResult(new List<ContrachequeModel> { contracheque });
+    }
+
+}
+
 
 

@@ -140,6 +140,9 @@ public class SecretariaService
             Status.PREF_SantaMariaDaVitoria_BA =>
                 (c.Ccoluna21 == "1" && acoluna4 != "MUNICÍPIO DE SANTA MARIA DA VITÓRIA/BA" && acoluna4 != "1"),
 
+            Status.FAPEN_SaoJoseDaSaje_AL =>
+                (c.Ccoluna21 == "1" && acoluna4 != "PREVIDÊNCIA" && acoluna4 != "1"),
+
             Status.PREF_Anadia_AL =>
                 (c.Ccoluna21 == "300" && acoluna4 != "PREFEITURA MUNICIPAL DE ANADIA" && acoluna4 != "300") ||
                 (c.Ccoluna21 == "351" && acoluna4 != "FUNDO MUNICIPAL DE SAUDE DE ANADIA" && acoluna4 != "351"),
