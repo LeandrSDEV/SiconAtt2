@@ -19,6 +19,8 @@ builder.Services.AddScoped<CafarnaumService>();
 builder.Services.AddScoped<IndiaporaService>();
 builder.Services.AddScoped<AnadiaService>();
 builder.Services.AddScoped<GiraDoPoncianoService>();
+builder.Services.AddScoped<FUNBodocoService>();
+builder.Services.AddScoped<BodocoService>();
 
 builder.Services.AddScoped<MatriculaService>();
 builder.Services.AddScoped<SecretariaService>();
@@ -49,6 +51,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Login}/{action=Index}/{id?}");
 
 app.Run();

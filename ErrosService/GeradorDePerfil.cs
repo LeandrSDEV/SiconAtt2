@@ -24,7 +24,7 @@ public class GeradorDePerfil
         {
             Status.PREF_Abare_BA => "123456", // Código fixo para PREF_Abare_BA
             Status.PREF_Cupira_PE => "654321", // Código fixo para PREF_Cupira_PE
-            Status.PREF_Alcinópolis_BA => "789012",
+            Status.PREF_Alcinópolis_MS => "789012",
             Status.PREF_Anadia_AL => "2411",
             _ => "000000" // Código padrão para status desconhecidos
         };

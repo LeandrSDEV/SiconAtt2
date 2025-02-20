@@ -11,6 +11,8 @@
         PREF_Anadia_AL = 7,
         PREF_Indiaporã_SP = 8,  
         PREF_GirauDoPonciano = 9,  
+        FUNPREBO_Bodoco_PE = 10,  
+        PREF_Bodoco_PE = 11,  
     }
 
 }

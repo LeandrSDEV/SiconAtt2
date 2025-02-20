@@ -29,16 +29,19 @@ namespace Servidor.Controllers
         private readonly IndiaporaService _IndiaporaService;
         private readonly AnadiaService _anadiaService;
         private readonly GiraDoPoncianoService _giraDoPoncianoService;
+        private readonly FUNBodocoService _fUNBodocoService;
+        private readonly BodocoService _bodocoService;
 
         public ConvenioController(BancoContext context, AbareService abareservice, 
-                                  CupiraService cupiraservice, CansancaoService cansancaoservice, 
+                                  CupiraService cupiraservice, CansancaoService cansancaoservice,
                                   MatriculaService matriculaservice, SecretariaService secretariaservice,
                                   ServidorService servidorService, CategoriaService categoriaService,
                                   CleanupService cleanupService, XiqueXiqueService xiqueXiqueService,
                                   AlcinopolisService alcinopolisService, CafarnaumService cafarnaumService,
                                   IndiaporaService indiaporaService, GeradorDePerfil geradorDePerfil,
                                   AnadiaService anadiaService, PerfilCalculo perfilCalculo,
-                                  GiraDoPoncianoService giraDoPoncianoService)
+                                  GiraDoPoncianoService giraDoPoncianoService, FUNBodocoService fUNBodocoService, 
+                                  BodocoService bodocoService)
         {
             _context = context;
             _servidorService = servidorService;
@@ -57,6 +60,8 @@ namespace Servidor.Controllers
             _cupiraservice = cupiraservice;
             _anadiaService = anadiaService;
             _giraDoPoncianoService = giraDoPoncianoService;
+            _fUNBodocoService = fUNBodocoService;
+            _bodocoService = bodocoService;
         }
 
         public IActionResult Index()
@@ -101,6 +106,8 @@ namespace Servidor.Controllers
                     { Status.PREF_Indiaporã_SP, colunas => _IndiaporaService.ProcessarArquivoAsync(colunas, Status.PREF_Indiaporã_SP) },
                     { Status.PREF_Anadia_AL, colunas => _anadiaService.ProcessarArquivoAsync(colunas, Status.PREF_Anadia_AL) },
                     { Status.PREF_GirauDoPonciano, colunas => _giraDoPoncianoService.ProcessarArquivoAsync(colunas, Status.PREF_GirauDoPonciano) },
+                    { Status.FUNPREBO_Bodoco_PE, colunas => _fUNBodocoService.ProcessarArquivoAsync(colunas, Status.FUNPREBO_Bodoco_PE) },
+                    { Status.PREF_Bodoco_PE, colunas => _bodocoService.ProcessarArquivoAsync(colunas, Status.PREF_Bodoco_PE) },
 };
 
                 if (serviceMap.TryGetValue(status.StatusSelecionado, out var processarArquivo))
@@ -240,6 +247,8 @@ namespace Servidor.Controllers
                 case Status.PREF_Anadia_AL: return "Município de Anadia/AL";
                 case Status.PREF_Indiaporã_SP: return "Município de Indiaporã/SP";
                 case Status.PREF_GirauDoPonciano: return "Município de Girau do Ponciano/AL";
+                case Status.FUNPREBO_Bodoco_PE: return "FUNPREBO - Bodocó/PE";
+                case Status.PREF_Bodoco_PE: return "Município de Bodocó/PE";
                 default: return "Selecione o Município";
             }
         }

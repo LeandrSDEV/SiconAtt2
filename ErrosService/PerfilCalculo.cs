@@ -65,7 +65,17 @@ namespace Servidor.ErrosService
                     {
                         "2" => "171",
                         _ => "329"
-                    },              
+                    },
+                    Status.FUNPREBO_Bodoco_PE => linha.Acoluna5.Trim() switch
+                    {                      
+                        _ => "391"
+                    },
+                    Status.PREF_Bodoco_PE => linha.Acoluna5.Trim() switch
+                    {
+                        "2" => "390",
+                        "1" => "390",
+                        _ => "392"
+                    },
                     Status.PREF_GirauDoPonciano => linha.Acoluna5.Trim() switch
                     {
                         "1" => "793",

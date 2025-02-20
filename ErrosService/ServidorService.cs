@@ -36,53 +36,49 @@ public class ServidorService
 
         foreach (var duplicata in duplicatasCcoluna2)
         {
-            int ocorrenciasEmAdministrativo = administrativosNormalizados.Count(a => a == duplicata.Valor);
+            // Contar as ocorrências em Administrativo
+            int ocorrenciasEmAdministrativo = administrativos
+                .Count(a => a.Acoluna1 != null && a.Acoluna1.TrimStart('0').Trim() == duplicata.Valor);
 
+            // Se a quantidade em Contracheque for maior que em Administrativo
             if (duplicata.QuantidadeC > ocorrenciasEmAdministrativo)
             {
-                // Quantidade extra que não tem correspondência em Acoluna1
-                int quantidadeExtra = duplicata.QuantidadeC - ocorrenciasEmAdministrativo;
-
-                // Filtrar as linhas extras
-                var linhasExtras = contracheques
-                    .Where(c => c.Ccoluna2?.TrimStart('0').Trim() == duplicata.Valor)
+                // Selecionar as linhas de Contracheque correspondentes a essa duplicata
+                var linhasDuplicadas = contracheques
+                    .Where(c => c.Ccoluna2 != null && c.Ccoluna2.TrimStart('0').Trim() == duplicata.Valor)
                     .ToList();
 
-                // Adicionar as linhas extras ao banco de dados e ao arquivo
+                // Filtrar as linhas que ainda não têm correspondência em Administrativo
+                var linhasExtras = linhasDuplicadas
+                    .Where(c => !administrativos.Any(a =>
+                        a.Acoluna1 != null && a.Acoluna1.TrimStart('0').Trim() == (c.Ccoluna2 != null ? c.Ccoluna2.TrimStart('0').Trim() : null) &&
+                        a.Acoluna2 != null && a.Acoluna2.TrimStart('0').Trim() == (c.Ccoluna3 != null ? c.Ccoluna3.TrimStart('0').Trim() : null)))
+                    .ToList();
+
                 foreach (var linha in linhasExtras)
                 {
-                    // Comparar a combinação Ccoluna2 + Ccoluna3 com Acoluna1 + Acoluna2
-                    var correspondente = administrativos
-                        .FirstOrDefault(a => (a.Acoluna1 + a.Acoluna2)?.Trim() == (linha.Ccoluna2 + linha.Ccoluna3)?.Trim());
+                    Console.WriteLine($"Discrepância encontrada: {linha.Ccoluna2};{linha.Ccoluna3}");
+                    discrepancias.Add(linha);
 
-                    if (correspondente == null)
+                    // Verificar se já existe no banco antes de adicionar
+                    bool exists = _context.Administrativo.Any(a =>
+                        a.Acoluna1 != null && a.Acoluna1.TrimStart('0').Trim() == (linha.Ccoluna2 != null ? linha.Ccoluna2.TrimStart('0').Trim() : null) &&
+                        a.Acoluna2 != null && a.Acoluna2.TrimStart('0').Trim() == (linha.Ccoluna3 != null ? linha.Ccoluna3.TrimStart('0').Trim() : null));
+
+                    if (!exists)
                     {
-                        // Se não encontrar correspondência exata, registra a discrepância
-                        Console.WriteLine($"Discrepância encontrada: {linha.Ccoluna2};{linha.Ccoluna3}");
-
-                        discrepancias.Add(linha);
-
-                        // Adiciona a linha ao banco de dados
-                        bool exists = _context.Administrativo.Any(a => a.Acoluna1 == linha.Ccoluna2);
-                        if (!exists)
+                        var novaLinha = new AdministrativoModel
                         {
-                            var novaLinha = new AdministrativoModel
-                            {
-                                Acoluna1 = linha.Ccoluna2,
-                                Acoluna2 = linha.Ccoluna3,
-                                Acoluna3 = linha.Ccoluna4,
-                                Acoluna4 = linha.Ccoluna21,
-                                Acoluna5 = linha.Ccoluna16,
-                                Acoluna6 = linha.Ccoluna18
-                            };
+                            Acoluna1 = linha.Ccoluna2,
+                            Acoluna2 = linha.Ccoluna3,
+                            Acoluna3 = linha.Ccoluna4,
+                            Acoluna4 = linha.Ccoluna21,
+                            Acoluna5 = linha.Ccoluna16,
+                            Acoluna6 = linha.Ccoluna18
+                        };
 
-                            Console.WriteLine($"Adicionando ao banco: {novaLinha.Acoluna1}, {novaLinha.Acoluna2}, {novaLinha.Acoluna3}");
-                            _context.Administrativo.Add(novaLinha);
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Encontrado correspondente para: {linha.Ccoluna2};{linha.Ccoluna3}");
+                        Console.WriteLine($"Adicionando ao banco: {novaLinha.Acoluna1}, {novaLinha.Acoluna2}, {novaLinha.Acoluna3}");
+                        _context.Administrativo.Add(novaLinha);
                     }
                 }
             }

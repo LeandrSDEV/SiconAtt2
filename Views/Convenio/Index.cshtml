@@ -6,12 +6,10 @@
 
 <br />
 <br />
-
-<h3 class="display-3 my-3 text-center">ATUALIZAÇÃO DE SERVIDOR</h3>
+<div class="bodylayout1">
+    <h3 class="display-3 my-3 text-center">ATUALIZAÇÃO DE SERVIDOR</h3>
 
 <br />
-<br />
-
 <form asp-controller="Convenio" asp-action="ProcessarArquivo" method="post" enctype="multipart/form-data">
     <div class="w-50 my-3 m-auto">
         <label for="StatusSelecionado" class="form-label">Município:</label>
@@ -19,7 +17,7 @@
             <option value=""> < --- Selecione o município  --- ></option>
         </select>
     </div>
-
+    <br />
     <div class="d-flex justify-content-between">
         <div class="txtcss">
             <label for="arquivoTxt" class="form-label">Arquivo Contracheque:</label>
@@ -28,13 +26,16 @@
 
         <div class="excelcss">
             <label for="arquivoExcel" class="form-label">Arquivo Administrador:</label>
-            <input type="file" id="arquivoExcel" name="arquivoExcel" accept=".xlsx" class="form-control" />
+            <input type="file" id="arquivoExcel" name="arquivoExcel" accept=".xls" class="form-control" />
         </div>
     </div>
 
-    <br /><br />
+    <br />
+    <br />
+    <br />
 
     <div class="text-center">
         <button type="submit" class="btn btn-primary w-25">Atualizar</button>
     </div>
 </form>
+</div>

@@ -12,8 +12,8 @@
       <RelatedAsset></RelatedAsset>
       <AssetTraitName></AssetTraitName>
       <AssetTraitValue></AssetTraitValue>
-      <Fingerprint>gs3awn5jev</Fingerprint>
-      <Integrity>sB3ERDyvuNcvuqXcQoDJ7AvT6J0UW8xdhugkJBJqVFM=</Integrity>
+      <Fingerprint>ya0vddc0ah</Fingerprint>
+      <Integrity>SlTgjcvQZ7c4F4YaWaEV5WYY3yvPghwOKOY+zdsN+YE=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\css\site.css'))</OriginalItemSpec>
@@ -1080,23 +1080,23 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\lib\jquery\LICENSE.txt'))</OriginalItemSpec>
     </StaticWebAsset>
-    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\Servidor.wo64ikg81p.bundle.scp.css'))">
+    <StaticWebAsset Include="$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\Servidor.4jh4afo5q0.bundle.scp.css'))">
       <SourceType>Package</SourceType>
       <SourceId>Servidor</SourceId>
       <ContentRoot>$(MSBuildThisFileDirectory)..\staticwebassets\</ContentRoot>
       <BasePath>_content/Servidor</BasePath>
-      <RelativePath>Servidor.wo64ikg81p.bundle.scp.css</RelativePath>
+      <RelativePath>Servidor.4jh4afo5q0.bundle.scp.css</RelativePath>
       <AssetKind>All</AssetKind>
       <AssetMode>Reference</AssetMode>
       <AssetRole>Primary</AssetRole>
       <RelatedAsset></RelatedAsset>
       <AssetTraitName>ScopedCss</AssetTraitName>
       <AssetTraitValue>ProjectBundle</AssetTraitValue>
-      <Fingerprint>wo64ikg81p</Fingerprint>
-      <Integrity>4BwNIW9jztR1O95ao6LBCy8X54JvNx3bUYKmIge9Gog=</Integrity>
+      <Fingerprint>4jh4afo5q0</Fingerprint>
+      <Integrity>QCjStMBDClGM/tOqVxRXBWM759KhxBrbkaEMIaC9Wyk=</Integrity>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\Servidor.wo64ikg81p.bundle.scp.css'))</OriginalItemSpec>
+      <OriginalItemSpec>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\Servidor.4jh4afo5q0.bundle.scp.css'))</OriginalItemSpec>
     </StaticWebAsset>
   </ItemGroup>
 </Project>

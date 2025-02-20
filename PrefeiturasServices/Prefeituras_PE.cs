@@ -80,3 +80,91 @@ public class CupiraService
         return Task.FromResult(new List<ContrachequeModel> { contracheque });
     }
 }
+//======================================    FUNPREBO - BODOCÓ    ============================================\\
+
+public class FUNBodocoService
+{
+    private static readonly Dictionary<string, string> Vinculo = new()
+    {        
+        { "PREVIDENCIA - RPPS - Aposentados", "4" },
+        { "PREVIDENCIA - RPPS - Pensionistas", "1" },
+        { "COMISSIONADO", "7" }
+    };
+
+    public Task<List<ContrachequeModel>> ProcessarArquivoAsync(string[] colunas, Status status)
+    {
+        var contracheque = ContrachequePE.CriarContracheque(colunas, "BODOCO");
+
+        if (contracheque.Ccoluna1 == "FUNDO PREVIDENCIARIO DE BODOCÓ")
+        {
+            contracheque.Ccoluna21 = "1";
+        }
+
+        if (Vinculo.ContainsKey(colunas[16].Trim()))
+        {
+            contracheque.Ccoluna16 = Vinculo[colunas[16].Trim()];
+        }
+
+        switch (contracheque.Ccoluna16)
+        {
+            default:
+                contracheque.Ccoluna18 = "391";
+                break;
+        }
+
+
+        return Task.FromResult(new List<ContrachequeModel> { contracheque });
+    }
+}
+//======================================    PREFEITURA DE BODOCÓ    ============================================\\
+
+public class BodocoService
+{
+    private static readonly Dictionary<string, string> Vinculo = new()
+    {
+        { "CONSELHO TUTELAR DE BODOCO", "17" },
+        { "COMISSIONADO", "7" },
+        { "EFETIVOS", "2" },
+        { "EXECUTIVO MUNICIPAL", "13" },
+        { "CEDIDOS DE SERRITA-PE", "33" },
+        { "BENEFICIO - AUXILIO RECLUSÃO", "13" },
+        { "PENSAO SOCIAL", "1" },
+        { "PERMUTA DE  IPUBI", "6" },
+        { "CEDIDOS PICOS - PI", "33" },
+        { "CONTRATADOS", "5" },
+        { "CEDIDOS DE OURICURI", "33" },
+        { "CEDIDOS - TRINDADE-PE", "33" },
+        { "CEDIDOS ARARIPE-CE", "33" },
+        { "PERMUTA DE  GRANITO", "6" },
+        { "CEDIDOS -SANTA CRUZ PE", "33" },
+    };
+
+    public Task<List<ContrachequeModel>> ProcessarArquivoAsync(string[] colunas, Status status)
+    {
+        var contracheque = ContrachequePE.CriarContracheque(colunas, "BODOCO");
+
+        if (contracheque.Ccoluna1 == "PREFEITURA MUNICIPAL DE BODOCO")
+        {
+            contracheque.Ccoluna21 = "1";
+        }
+
+        if (Vinculo.ContainsKey(colunas[16].Trim()))
+        {
+            contracheque.Ccoluna16 = Vinculo[colunas[16].Trim()];
+        }
+
+        switch (contracheque.Ccoluna16)
+        {
+            case "2":
+            case "1":
+                contracheque.Ccoluna18 = "390";
+                break;
+            default:
+                contracheque.Ccoluna18 = "392";
+                break;
+        }
+
+
+        return Task.FromResult(new List<ContrachequeModel> { contracheque });
+    }
+}

@@ -517,3 +517,4 @@ C:\Users\LEANDRO\Desktop\SiconATT-main1\obj\Debug\net8.0\staticwebassets.upToDat
 C:\Users\LEANDRO\Desktop\SiconATT-main1\obj\Debug\net8.0\Servidor.csproj.Up2Date
 C:\Users\LEANDRO\Desktop\SiconATT-main1\obj\Debug\net8.0\Servidor.genruntimeconfig.cache
 C:\Users\LEANDRO\Desktop\SiconATT-main1\obj\Debug\net8.0\ref\Servidor.dll
+C:\Users\LEANDRO\Desktop\SiconATT-main1\obj\Debug\net8.0\scopedcss\Views\Shared\_LayoutOFF.cshtml.rz.scp.css

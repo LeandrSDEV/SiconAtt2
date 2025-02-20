@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "5XOeUGFh8uI32RmR2DJVX99mMxF1r8xp4hNBVfIrbAw=",
+  "Hash": "7E+iVzY7ZfEMN/dDRiI1h6TvCIdm54AuKHMv7C8Menk=",
   "Source": "Servidor",
   "BasePath": "_content/Servidor",
   "Mode": "Default",
@@ -31,8 +31,8 @@
       "RelatedAsset": "",
       "AssetTraitName": "ScopedCss",
       "AssetTraitValue": "ApplicationBundle",
-      "Fingerprint": "wo64ikg81p",
-      "Integrity": "4BwNIW9jztR1O95ao6LBCy8X54JvNx3bUYKmIge9Gog=",
+      "Fingerprint": "4jh4afo5q0",
+      "Integrity": "QCjStMBDClGM/tOqVxRXBWM759KhxBrbkaEMIaC9Wyk=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "C:\\Users\\LEANDRO\\Desktop\\SiconATT-main1\\obj\\Debug\\net8.0\\scopedcss\\bundle\\Servidor.styles.css"
@@ -52,8 +52,8 @@
       "RelatedAsset": "",
       "AssetTraitName": "ScopedCss",
       "AssetTraitValue": "ProjectBundle",
-      "Fingerprint": "wo64ikg81p",
-      "Integrity": "4BwNIW9jztR1O95ao6LBCy8X54JvNx3bUYKmIge9Gog=",
+      "Fingerprint": "4jh4afo5q0",
+      "Integrity": "QCjStMBDClGM/tOqVxRXBWM759KhxBrbkaEMIaC9Wyk=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "C:\\Users\\LEANDRO\\Desktop\\SiconATT-main1\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\Servidor.bundle.scp.css"
@@ -73,8 +73,8 @@
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
-      "Fingerprint": "gs3awn5jev",
-      "Integrity": "sB3ERDyvuNcvuqXcQoDJ7AvT6J0UW8xdhugkJBJqVFM=",
+      "Fingerprint": "ya0vddc0ah",
+      "Integrity": "SlTgjcvQZ7c4F4YaWaEV5WYY3yvPghwOKOY+zdsN+YE=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\css\\site.css"
@@ -1331,7 +1331,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "1887"
+          "Value": "3315"
         },
         {
           "Name": "Content-Type",
@@ -1339,11 +1339,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"sB3ERDyvuNcvuqXcQoDJ7AvT6J0UW8xdhugkJBJqVFM=\""
+          "Value": "\"SlTgjcvQZ7c4F4YaWaEV5WYY3yvPghwOKOY+zdsN+YE=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 18 Feb 2025 23:41:58 GMT"
+          "Value": "Thu, 20 Feb 2025 02:17:23 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1353,12 +1353,12 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-sB3ERDyvuNcvuqXcQoDJ7AvT6J0UW8xdhugkJBJqVFM="
+          "Value": "sha256-SlTgjcvQZ7c4F4YaWaEV5WYY3yvPghwOKOY+zdsN+YE="
         }
       ]
     },
     {
-      "Route": "css/site.gs3awn5jev.css",
+      "Route": "css/site.ya0vddc0ah.css",
       "AssetFile": "C:\\Users\\LEANDRO\\Desktop\\SiconATT-main1\\wwwroot\\css\\site.css",
       "Selectors": [],
       "ResponseHeaders": [
@@ -1368,7 +1368,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "1887"
+          "Value": "3315"
         },
         {
           "Name": "Content-Type",
@@ -1376,11 +1376,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"sB3ERDyvuNcvuqXcQoDJ7AvT6J0UW8xdhugkJBJqVFM=\""
+          "Value": "\"SlTgjcvQZ7c4F4YaWaEV5WYY3yvPghwOKOY+zdsN+YE=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Tue, 18 Feb 2025 23:41:58 GMT"
+          "Value": "Thu, 20 Feb 2025 02:17:23 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1390,7 +1390,7 @@
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "gs3awn5jev"
+          "Value": "ya0vddc0ah"
         },
         {
           "Name": "label",
@@ -1398,7 +1398,7 @@
         },
         {
           "Name": "integrity",
-          "Value": "sha256-sB3ERDyvuNcvuqXcQoDJ7AvT6J0UW8xdhugkJBJqVFM="
+          "Value": "sha256-SlTgjcvQZ7c4F4YaWaEV5WYY3yvPghwOKOY+zdsN+YE="
         }
       ]
     },
@@ -6241,6 +6241,96 @@
       ]
     },
     {
+      "Route": "Servidor.4jh4afo5q0.bundle.scp.css",
+      "AssetFile": "C:\\Users\\LEANDRO\\Desktop\\SiconATT-main1\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\Servidor.bundle.scp.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "2255"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"QCjStMBDClGM/tOqVxRXBWM759KhxBrbkaEMIaC9Wyk=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Thu, 20 Feb 2025 01:21:04 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "4jh4afo5q0"
+        },
+        {
+          "Name": "label",
+          "Value": "Servidor.bundle.scp.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-QCjStMBDClGM/tOqVxRXBWM759KhxBrbkaEMIaC9Wyk="
+        }
+      ]
+    },
+    {
+      "Route": "Servidor.4jh4afo5q0.styles.css",
+      "AssetFile": "C:\\Users\\LEANDRO\\Desktop\\SiconATT-main1\\obj\\Debug\\net8.0\\scopedcss\\bundle\\Servidor.styles.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "2255"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"QCjStMBDClGM/tOqVxRXBWM759KhxBrbkaEMIaC9Wyk=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Thu, 20 Feb 2025 01:21:04 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "4jh4afo5q0"
+        },
+        {
+          "Name": "label",
+          "Value": "Servidor.styles.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-QCjStMBDClGM/tOqVxRXBWM759KhxBrbkaEMIaC9Wyk="
+        }
+      ]
+    },
+    {
       "Route": "Servidor.bundle.scp.css",
       "AssetFile": "C:\\Users\\LEANDRO\\Desktop\\SiconATT-main1\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\Servidor.bundle.scp.css",
       "Selectors": [],
@@ -6251,7 +6341,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "1126"
+          "Value": "2255"
         },
         {
           "Name": "Content-Type",
@@ -6259,11 +6349,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"4BwNIW9jztR1O95ao6LBCy8X54JvNx3bUYKmIge9Gog=\""
+          "Value": "\"QCjStMBDClGM/tOqVxRXBWM759KhxBrbkaEMIaC9Wyk=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sun, 16 Feb 2025 10:49:11 GMT"
+          "Value": "Thu, 20 Feb 2025 01:21:04 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -6273,7 +6363,7 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-4BwNIW9jztR1O95ao6LBCy8X54JvNx3bUYKmIge9Gog="
+          "Value": "sha256-QCjStMBDClGM/tOqVxRXBWM759KhxBrbkaEMIaC9Wyk="
         }
       ]
     },
@@ -6288,7 +6378,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "1126"
+          "Value": "2255"
         },
         {
           "Name": "Content-Type",
@@ -6296,11 +6386,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"4BwNIW9jztR1O95ao6LBCy8X54JvNx3bUYKmIge9Gog=\""
+          "Value": "\"QCjStMBDClGM/tOqVxRXBWM759KhxBrbkaEMIaC9Wyk=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sun, 16 Feb 2025 10:49:11 GMT"
+          "Value": "Thu, 20 Feb 2025 01:21:04 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -6310,97 +6400,7 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-4BwNIW9jztR1O95ao6LBCy8X54JvNx3bUYKmIge9Gog="
-        }
-      ]
-    },
-    {
-      "Route": "Servidor.wo64ikg81p.bundle.scp.css",
-      "AssetFile": "C:\\Users\\LEANDRO\\Desktop\\SiconATT-main1\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\Servidor.bundle.scp.css",
-      "Selectors": [],
-      "ResponseHeaders": [
-        {
-          "Name": "Accept-Ranges",
-          "Value": "bytes"
-        },
-        {
-          "Name": "Content-Length",
-          "Value": "1126"
-        },
-        {
-          "Name": "Content-Type",
-          "Value": "text/css"
-        },
-        {
-          "Name": "ETag",
-          "Value": "\"4BwNIW9jztR1O95ao6LBCy8X54JvNx3bUYKmIge9Gog=\""
-        },
-        {
-          "Name": "Last-Modified",
-          "Value": "Sun, 16 Feb 2025 10:49:11 GMT"
-        },
-        {
-          "Name": "Cache-Control",
-          "Value": "max-age=31536000, immutable"
-        }
-      ],
-      "EndpointProperties": [
-        {
-          "Name": "fingerprint",
-          "Value": "wo64ikg81p"
-        },
-        {
-          "Name": "label",
-          "Value": "Servidor.bundle.scp.css"
-        },
-        {
-          "Name": "integrity",
-          "Value": "sha256-4BwNIW9jztR1O95ao6LBCy8X54JvNx3bUYKmIge9Gog="
-        }
-      ]
-    },
-    {
-      "Route": "Servidor.wo64ikg81p.styles.css",
-      "AssetFile": "C:\\Users\\LEANDRO\\Desktop\\SiconATT-main1\\obj\\Debug\\net8.0\\scopedcss\\bundle\\Servidor.styles.css",
-      "Selectors": [],
-      "ResponseHeaders": [
-        {
-          "Name": "Accept-Ranges",
-          "Value": "bytes"
-        },
-        {
-          "Name": "Content-Length",
-          "Value": "1126"
-        },
-        {
-          "Name": "Content-Type",
-          "Value": "text/css"
-        },
-        {
-          "Name": "ETag",
-          "Value": "\"4BwNIW9jztR1O95ao6LBCy8X54JvNx3bUYKmIge9Gog=\""
-        },
-        {
-          "Name": "Last-Modified",
-          "Value": "Sun, 16 Feb 2025 10:49:11 GMT"
-        },
-        {
-          "Name": "Cache-Control",
-          "Value": "max-age=31536000, immutable"
-        }
-      ],
-      "EndpointProperties": [
-        {
-          "Name": "fingerprint",
-          "Value": "wo64ikg81p"
-        },
-        {
-          "Name": "label",
-          "Value": "Servidor.styles.css"
-        },
-        {
-          "Name": "integrity",
-          "Value": "sha256-4BwNIW9jztR1O95ao6LBCy8X54JvNx3bUYKmIge9Gog="
+          "Value": "sha256-QCjStMBDClGM/tOqVxRXBWM759KhxBrbkaEMIaC9Wyk="
         }
       ]
     }

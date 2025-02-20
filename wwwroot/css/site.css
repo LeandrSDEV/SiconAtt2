@@ -1,4 +1,4 @@
-body {
+.Layout1 {
     font-family: 'Roboto', sans-serif;
     background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(34, 193, 195, 0.8), rgba(0, 0, 0, 0.8));
     background-size: cover;
@@ -6,6 +6,10 @@ body {
     background-attachment: fixed; /* Isso ajuda a fixar o fundo enquanto o conteúdo rola */
     color: white;
     margin-bottom: 60px;
+}
+
+.bodylayout1{
+    padding: 100px 0;
 }
 
 h3 {
@@ -31,7 +35,7 @@ h3 {
     }
 
 .txtcss, .excelcss {
-    background-color: rgba(98, 0, 234, 0.7);
+    background-color: rgb(33, 31, 31, 0,47);
     border-radius: 15px;
     padding: 20px;
     text-align: center;
@@ -81,4 +85,78 @@ select.form-select {
 footer {
     background-color: rgba(0, 0, 0, 0.8);
     padding: 10px;
+}
+
+
+.Layout2 {
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    min-height: 100vh;
+    margin: 0;
+    padding-top: 60px; /* Espaço para a navbar */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 10px 20px;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+    .navbar .title {
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+
+    .navbar .clock {
+        font-size: 1rem;
+    }
+
+.clock-container {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    color: #ffffff;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 400px;
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 2.5);
+    color: white;
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    text-align: center;
+    padding: 10px 0;
 }
