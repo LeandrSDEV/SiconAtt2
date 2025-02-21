@@ -80,3 +80,51 @@ public class AlcinopolisService
         return Task.FromResult(new List<ContrachequeModel> { contracheque });
     }
 }
+
+//======================================    MIRANDA    ============================================\\
+
+public class MirandaService
+{
+    private static readonly Dictionary<string, string> Vinculo = new()
+    {
+        { "EFETIVOS", "2" },    
+        { "COMISSIONADO", "7" },    
+        { "ELETIVO", "13" },    
+        { "CELETISTAS", "9" },    
+        { "CONTRATADOS", "5" },    
+        { "PENSIONISTAS", "1" },    
+        { "APOSENTADOS", "4" },    
+        { "CONVOCADOS", "7" },    
+    };
+
+    public Task<List<ContrachequeModel>> ProcessarArquivoAsync(string[] colunas, Status status)
+    {
+        var contracheque = ContrachequeMS.CriarContracheque(colunas, "MIRANDA");
+
+        if (contracheque.Ccoluna1 == "PREFEITURA DO MUNICIPIO DE MIRANDA")
+        {
+            contracheque.Ccoluna21 = "1";
+        }
+
+        if (Vinculo.ContainsKey(colunas[16].Trim()))
+        {
+            contracheque.Ccoluna16 = Vinculo[colunas[16].Trim()];
+        }
+
+        switch (contracheque.Ccoluna16)
+        {   
+            case "1":
+            case "2":
+            case "4":
+            case "9":
+                contracheque.Ccoluna18 = "299";
+                break;
+            default:
+                contracheque.Ccoluna18 = "309";
+                break;
+        }
+
+
+        return Task.FromResult(new List<ContrachequeModel> { contracheque });
+    }
+}

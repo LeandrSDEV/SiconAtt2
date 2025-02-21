@@ -105,6 +105,14 @@ namespace Servidor.ErrosService
                         "1" => "766",
                         _ => "767"
                     },
+                    Status.PREF_Miranda_MS => linha.Acoluna5.Trim() switch
+                    {
+                        "1" => "299",
+                        "2" => "299",
+                        "4" => "299",
+                        "9" => "299",
+                        _ => "309"
+                    },
                     Status.PREF_SantaMariaDaVitoria_BA => linha.Acoluna5.Trim() switch
                     {
                         "1" => "1009",
@@ -118,6 +126,12 @@ namespace Servidor.ErrosService
                         "17" => "994",
                         "10" => "994",
                         _ => "995"
+                    },
+                    Status.FUNDO_Moncao_MA => linha.Acoluna5.Trim() switch
+                    {
+                        "2" => "925",
+                        "16" => "925",
+                        _ => "938"
                     },
                     Status.PREF_GirauDoPonciano => linha.Acoluna5.Trim() switch
                     {

@@ -20,6 +20,8 @@
         FAPEN_SaoJoseDaSaje_AL = 16, 
         PREF_BeloMonte_AL = 17, 
         PREF_CabaceiraDoParaguacu_BA = 18, 
+        PREF_Miranda_MS = 19, 
+        FUNDO_Moncao_MA = 20, 
     }
 
 }

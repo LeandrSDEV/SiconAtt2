@@ -143,6 +143,12 @@ public class SecretariaService
             Status.PREF_CabaceiraDoParaguacu_BA =>
                 (c.Ccoluna21 == "1" && acoluna4 != "MUNICÍPIO DE CABACEIRAS DO PARAGUAÇU/BA" && acoluna4 != "1"),
 
+            Status.PREF_Miranda_MS =>
+                (c.Ccoluna21 == "1" && acoluna4 != "PREFEITURA MUNICIPAL DE MIRANDA" && acoluna4 != "1"),
+
+            Status.FUNDO_Moncao_MA =>
+                (c.Ccoluna21 == "7" && acoluna4 != "FUNDO MUNICIPAL DE SAÚDE DE MONÇÃO/MA" && acoluna4 != "7"),
+
             Status.PREF_BeloMonte_AL =>
                 (c.Ccoluna21 == "3" && acoluna4 != "SAÚDE / EDUCAÇÃO" && acoluna4 != "3")||
                 (c.Ccoluna21 == "2" && acoluna4 != "PREVIDÊNCIA DE BELO MONTE/AL" && acoluna4 != "2")||

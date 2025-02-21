@@ -38,6 +38,8 @@ namespace Servidor.Controllers
         private readonly FAPENSaoJoseLajeService _fAPENSaoJoseLajeService;
         private readonly BeloMonteService _beloMonteService;
         private readonly CabaceiraParaguacuService _cabaceiraParaguacuService;
+        private readonly MirandaService _mirandaService;
+        private readonly FundoMoncaoService _fundoMoncaoService;
 
         public ConvenioController(BancoContext context, AbareService abareservice, 
                                   CupiraService cupiraservice, CansancaoService cansancaoservice,
@@ -51,7 +53,8 @@ namespace Servidor.Controllers
                                   BodocoService bodocoService, CatuService catuService,
                                   RemansoService remansoService, FMSCupiraService fMSCupiraService,
                                   SantaMariaVitoriaService santaMariaVitoriaService, FAPENSaoJoseLajeService fAPENSaoJoseLajeService,
-                                  BeloMonteService beloMonteService, CabaceiraParaguacuService cabaceiraParaguacuService)
+                                  BeloMonteService beloMonteService, CabaceiraParaguacuService cabaceiraParaguacuService,
+                                  MirandaService mirandaService, FundoMoncaoService fundoMoncaoService)
         {
             _context = context;
             _servidorService = servidorService;
@@ -79,6 +82,8 @@ namespace Servidor.Controllers
             _fAPENSaoJoseLajeService = fAPENSaoJoseLajeService;
             _beloMonteService = beloMonteService;
             _cabaceiraParaguacuService = cabaceiraParaguacuService;
+            _mirandaService = mirandaService;
+            _fundoMoncaoService = fundoMoncaoService;
         }
 
         public IActionResult Index()
@@ -132,6 +137,8 @@ namespace Servidor.Controllers
                     { Status.FAPEN_SaoJoseDaSaje_AL, colunas => _fAPENSaoJoseLajeService.ProcessarArquivoAsync(colunas, Status.FAPEN_SaoJoseDaSaje_AL) },
                     { Status.PREF_BeloMonte_AL, colunas => _beloMonteService.ProcessarArquivoAsync(colunas, Status.PREF_BeloMonte_AL) },
                     { Status.PREF_CabaceiraDoParaguacu_BA, colunas => _cabaceiraParaguacuService.ProcessarArquivoAsync(colunas, Status.PREF_CabaceiraDoParaguacu_BA) },
+                    { Status.PREF_Miranda_MS, colunas => _mirandaService.ProcessarArquivoAsync(colunas, Status.PREF_Miranda_MS) },
+                    { Status.FUNDO_Moncao_MA, colunas => _fundoMoncaoService.ProcessarArquivoAsync(colunas, Status.FUNDO_Moncao_MA) },
 };
 
                 if (serviceMap.TryGetValue(status.StatusSelecionado, out var processarArquivo))
@@ -217,6 +224,12 @@ namespace Servidor.Controllers
                             { "Regime Administrativo", "18"},
                             { "Efetivo/comissão", "15" },
                             { "Prestador de serviço", "6" },
+                            { "ESTAVEIS", "16" },
+                            { "CONTRATADO", "5" },
+                            { "CONCURSADOS", "2" },
+                            { "COMISSIONADOS", "7" },
+                            { "Concursado", "2" },
+                            { "Estável", "16" },
                         };                      
 
                          //Atualiza Acoluna5 com base no mapeamento
@@ -283,6 +296,8 @@ namespace Servidor.Controllers
                 case Status.FAPEN_SaoJoseDaSaje_AL: return "FAPEN - São José da Laje/AL";
                 case Status.PREF_BeloMonte_AL: return "Município de Belo Monte/AL";
                 case Status.PREF_CabaceiraDoParaguacu_BA: return "Município de Cabaceiras do Paraguaçu/BA";
+                case Status.PREF_Miranda_MS: return "Município de Miranda/MS";
+                case Status.FUNDO_Moncao_MA: return "Fundo Municipal de Saúde de Monção/MA";
                 default: return "Selecione o Município";
             }
         }

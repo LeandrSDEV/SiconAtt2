@@ -28,6 +28,8 @@ builder.Services.AddScoped<SantaMariaVitoriaService>();
 builder.Services.AddScoped<FAPENSaoJoseLajeService>();
 builder.Services.AddScoped<BeloMonteService>();
 builder.Services.AddScoped<CabaceiraParaguacuService>();
+builder.Services.AddScoped<MirandaService>();
+builder.Services.AddScoped<FundoMoncaoService>();
 
 builder.Services.AddScoped<MatriculaService>();
 builder.Services.AddScoped<SecretariaService>();
