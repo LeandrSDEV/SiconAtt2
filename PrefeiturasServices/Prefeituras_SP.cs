@@ -65,8 +65,11 @@ public class IndiaporaService
 
         switch (contracheque.Ccoluna16)
         {
+            case "2":
+                contracheque.Ccoluna18 = "964";
+                break;
             default:
-                contracheque.Ccoluna18 = "294";
+                contracheque.Ccoluna18 = "965";
                 break;
         }
 

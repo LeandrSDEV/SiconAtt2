@@ -58,13 +58,28 @@ namespace Servidor.ErrosService
                         _ => "937"
                     },
                     Status.PREF_Indiaporã_SP => linha.Acoluna5.Trim() switch
-                    {                       
-                        _ => "294"
+                    {
+                        "2" => "964",
+                        _ => "965"
                     },
                     Status.PREF_Anadia_AL => linha.Acoluna5.Trim() switch
                     {
                         "2" => "171",
                         _ => "329"
+                    },
+                    Status.PREF_BeloMonte_AL => linha.Acoluna5.Trim() switch
+                    {                       
+                    "1" => "636",
+                    "4" => "636",
+                    "2" => "624",
+                        _ => "625"
+                    },
+                    Status.PREF_CabaceiraDoParaguacu_BA => linha.Acoluna5.Trim() switch
+                    {                       
+                    "1" => "987",
+                    "2" => "987",
+                    "15" => "987",
+                        _ => "988"
                     },
                     Status.FUNPREBO_Bodoco_PE => linha.Acoluna5.Trim() switch
                     {                      

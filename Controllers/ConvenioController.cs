@@ -36,6 +36,8 @@ namespace Servidor.Controllers
         private readonly FMSCupiraService _fMSCupiraService;
         private readonly SantaMariaVitoriaService _santaMariaVitoriaService;
         private readonly FAPENSaoJoseLajeService _fAPENSaoJoseLajeService;
+        private readonly BeloMonteService _beloMonteService;
+        private readonly CabaceiraParaguacuService _cabaceiraParaguacuService;
 
         public ConvenioController(BancoContext context, AbareService abareservice, 
                                   CupiraService cupiraservice, CansancaoService cansancaoservice,
@@ -48,7 +50,8 @@ namespace Servidor.Controllers
                                   GiraDoPoncianoService giraDoPoncianoService, FUNBodocoService fUNBodocoService, 
                                   BodocoService bodocoService, CatuService catuService,
                                   RemansoService remansoService, FMSCupiraService fMSCupiraService,
-                                  SantaMariaVitoriaService santaMariaVitoriaService, FAPENSaoJoseLajeService fAPENSaoJoseLajeService)
+                                  SantaMariaVitoriaService santaMariaVitoriaService, FAPENSaoJoseLajeService fAPENSaoJoseLajeService,
+                                  BeloMonteService beloMonteService, CabaceiraParaguacuService cabaceiraParaguacuService)
         {
             _context = context;
             _servidorService = servidorService;
@@ -74,6 +77,8 @@ namespace Servidor.Controllers
             _fMSCupiraService = fMSCupiraService;
             _santaMariaVitoriaService = santaMariaVitoriaService;
             _fAPENSaoJoseLajeService = fAPENSaoJoseLajeService;
+            _beloMonteService = beloMonteService;
+            _cabaceiraParaguacuService = cabaceiraParaguacuService;
         }
 
         public IActionResult Index()
@@ -125,6 +130,8 @@ namespace Servidor.Controllers
                     { Status.FMS_Cupira_PE, colunas => _fMSCupiraService.ProcessarArquivoAsync(colunas, Status.FMS_Cupira_PE) },
                     { Status.PREF_SantaMariaDaVitoria_BA, colunas => _santaMariaVitoriaService.ProcessarArquivoAsync(colunas, Status.PREF_SantaMariaDaVitoria_BA) },
                     { Status.FAPEN_SaoJoseDaSaje_AL, colunas => _fAPENSaoJoseLajeService.ProcessarArquivoAsync(colunas, Status.FAPEN_SaoJoseDaSaje_AL) },
+                    { Status.PREF_BeloMonte_AL, colunas => _beloMonteService.ProcessarArquivoAsync(colunas, Status.PREF_BeloMonte_AL) },
+                    { Status.PREF_CabaceiraDoParaguacu_BA, colunas => _cabaceiraParaguacuService.ProcessarArquivoAsync(colunas, Status.PREF_CabaceiraDoParaguacu_BA) },
 };
 
                 if (serviceMap.TryGetValue(status.StatusSelecionado, out var processarArquivo))
@@ -208,6 +215,8 @@ namespace Servidor.Controllers
                             { "Estagiario", "8"},
                             { "Aposentado", "4"},
                             { "Regime Administrativo", "18"},
+                            { "Efetivo/comissão", "15" },
+                            { "Prestador de serviço", "6" },
                         };                      
 
                          //Atualiza Acoluna5 com base no mapeamento
@@ -272,6 +281,8 @@ namespace Servidor.Controllers
                 case Status.FMS_Cupira_PE: return "Fundo Municipal de Saúde de Cupira/PE";
                 case Status.PREF_SantaMariaDaVitoria_BA: return "Município de Santa Maria da Vitória/BA";
                 case Status.FAPEN_SaoJoseDaSaje_AL: return "FAPEN - São José da Laje/AL";
+                case Status.PREF_BeloMonte_AL: return "Município de Belo Monte/AL";
+                case Status.PREF_CabaceiraDoParaguacu_BA: return "Município de Cabaceiras do Paraguaçu/BA";
                 default: return "Selecione o Município";
             }
         }

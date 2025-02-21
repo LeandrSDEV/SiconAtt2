@@ -2,7 +2,7 @@
 
 @{
     Layout = "_LayoutOFF";
-    ViewData["Title"] = "Login Futurista";
+    ViewData["Title"] = "Login";
 }
 
 @if(TempData["MensagemErro"] != null){
@@ -45,9 +45,10 @@
             <div class="modal-body">
                 <form method="post" action="/Login/RecoverPassword">
                     <div class="form-group">
-                        <label for="email" class="form-label">Digite seu e-mail</label>
+                        <label for="email" class="form-label text-dark">Digite seu e-mail</label>
                         <input type="email" class="form-control" id="email" name="email" placeholder="Digite seu e-mail" required>
                     </div>
+                    <br />
                     <button type="submit" class="btn btn-secondary">Enviar</button>
                 </form>
             </div>

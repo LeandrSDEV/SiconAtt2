@@ -342,3 +342,51 @@ public class SantaMariaVitoriaService
     }
 
 }
+//======================================    CABACEIRAS DO PARAGUAÇU    ============================================\\
+
+public class CabaceiraParaguacuService
+{
+    private static readonly Dictionary<string, string> MapeamentoStatus = new()
+    {
+       { "Efetivo", "2" },
+       { "Efetivo/Comissionado", "15" },
+       { "Pensionista", "1" },
+       { "Efetivo/ Agente Politico", "15" },
+       { "Contrato", "5" },
+       { "Comissionado", "7" },
+       { "Conselheiro Tutelar", "17" },
+       { "Eleito", "13" },
+       { "Agente Político", "13" },
+       { "Celetista", "9" },
+    };
+
+    public Task<List<ContrachequeModel>> ProcessarArquivoAsync(string[] colunas, Status status)
+    {
+        var contracheque = ContrachequeBA.CriarContracheque(colunas, "CABACEIRAS DO PARAGUAÇU");
+
+        if (contracheque.Ccoluna1 == "PREFEITURA MUNICIPAL DE CABACEIRAS DO PARAGUACU")
+        {
+            contracheque.Ccoluna19 = "1";
+        }
+
+        if (MapeamentoStatus.ContainsKey(colunas[16].Trim()))
+        {
+            contracheque.Ccoluna16 = MapeamentoStatus[colunas[16].Trim()];
+        }
+
+        switch (contracheque.Ccoluna16)
+        {
+            case "1":
+            case "2":
+            case "15":
+                contracheque.Ccoluna18 = "987";
+                break;
+            default:
+                contracheque.Ccoluna18 = "988";
+                break;
+        }
+
+        return Task.FromResult(new List<ContrachequeModel> { contracheque });
+    }
+
+}

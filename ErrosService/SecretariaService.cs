@@ -120,7 +120,7 @@ public class SecretariaService
                 (c.Ccoluna21 == "1" && acoluna4 != "PREFEITURA"),
 
             Status.PREF_Indiaporã_SP =>
-                (c.Ccoluna21 == "1" && acoluna4 != "MUNICÍPIO DE INDIAPORÃ/SP "),
+                (c.Ccoluna21 == "1" && acoluna4 != "MUNICÍPIO DE INDIAPORÃ/SP"),
 
             Status.FUNPREBO_Bodoco_PE =>
                 (c.Ccoluna21 == "1" && acoluna4 != "PREVIDÊNCIA MUNICIPAL DE BODOCÓ" && acoluna4 != "1"),
@@ -139,6 +139,14 @@ public class SecretariaService
 
             Status.PREF_SantaMariaDaVitoria_BA =>
                 (c.Ccoluna21 == "1" && acoluna4 != "MUNICÍPIO DE SANTA MARIA DA VITÓRIA/BA" && acoluna4 != "1"),
+
+            Status.PREF_CabaceiraDoParaguacu_BA =>
+                (c.Ccoluna21 == "1" && acoluna4 != "MUNICÍPIO DE CABACEIRAS DO PARAGUAÇU/BA" && acoluna4 != "1"),
+
+            Status.PREF_BeloMonte_AL =>
+                (c.Ccoluna21 == "3" && acoluna4 != "SAÚDE / EDUCAÇÃO" && acoluna4 != "3")||
+                (c.Ccoluna21 == "2" && acoluna4 != "PREVIDÊNCIA DE BELO MONTE/AL" && acoluna4 != "2")||
+                (c.Ccoluna21 == "1" && acoluna4 != "MUNICÍPIO DE BELO MONTE/AL" && acoluna4 != "1"),
 
             Status.FAPEN_SaoJoseDaSaje_AL =>
                 (c.Ccoluna21 == "1" && acoluna4 != "PREVIDÊNCIA" && acoluna4 != "1"),

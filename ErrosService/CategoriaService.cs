@@ -13,66 +13,57 @@ public class CategoriaService
 
     public async Task GerarVinculoAsync()
     {
-        // Carregar os dados das tabelas
-        var TabelaTxt = await _context.Contracheque.ToListAsync();
-        var TabelaExcel = await _context.Administrativo.ToListAsync();
+        // Carregar apenas os dados necessários
+        var TabelaTxt = await _context.Contracheque
+            .Select(c => new { c.Ccoluna2, c.Ccoluna3, c.Ccoluna16 })
+            .ToListAsync();
 
-        // Normalizando os dados da tabela Administrativo
-        var administrativosNormalizados = TabelaExcel
-            .Select(a => new
-            {
-                Acoluna1 = a.Acoluna1, 
-                Acoluna5 = a.Acoluna5,
-                AcolunaId = a.Id // ID para identificar cada linha
-            })
-            .ToList();
+        var TabelaExcel = await _context.Administrativo
+            .Select(a => new { a.Id, a.Acoluna1, a.Acoluna5 })
+            .ToListAsync();
 
-        // Filtrar as discrepâncias considerando que o Ccoluna2 deve existir na Acoluna1
+        // Identificar as discrepâncias
         var discrepancias = TabelaTxt
-            .Where(c =>
-                administrativosNormalizados.Any(a => a.Acoluna1 == c.Ccoluna2) && // Verifica se Ccoluna2 existe na Acoluna1
-                !administrativosNormalizados.Any(a =>
-                    a.Acoluna1 == c.Ccoluna2 && // Comparação Acoluna1 <-> Ccoluna2
-                    a.Acoluna5.Equals(c.Ccoluna16, StringComparison.OrdinalIgnoreCase) // Comparação segura Acoluna5 <-> Ccoluna16
-                )
-            )
-            .ToList();
+    .Where(c =>
+        TabelaExcel.Any(a => a.Acoluna1 == c.Ccoluna2) && // Verificar se Ccoluna2 existe na Acoluna1
+        !TabelaExcel.Any(a =>
+            a.Acoluna1 == c.Ccoluna2 && // Correspondência Acoluna1 <-> Ccoluna2
+            a.Acoluna5.Trim().Equals(c.Ccoluna16.Trim(), StringComparison.OrdinalIgnoreCase) // Comparação Acoluna5 <-> Ccoluna16
+        )
+    )
+    .ToList();
 
-        // Verificar se há discrepâncias antes de gerar o arquivo
         if (discrepancias.Any())
         {
             // Agrupar discrepâncias por Ccoluna2
-            var discrepanciasAgrupadas = discrepancias
-                .GroupBy(d => d.Ccoluna2)
-                .ToList();
+            var discrepanciasAgrupadas = discrepancias.GroupBy(d => d.Ccoluna2);
 
-            // Gerar o arquivo TXT com as discrepâncias
             var desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
             var filePath = Path.Combine(desktopPath, "CATEGORIA.txt");
 
-            // Usando StreamWriter assíncrono para escrever no arquivo
-            using (var writer = new StreamWriter(filePath))
+            using var writer = new StreamWriter(filePath);
+
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
                 foreach (var grupo in discrepanciasAgrupadas)
                 {
                     foreach (var item in grupo)
                     {
-                        // Escrever cada linha com valores únicos de Ccoluna3
+                        // Escrever no arquivo
                         await writer.WriteLineAsync($"{item.Ccoluna2};{item.Ccoluna3};{item.Ccoluna16}");
 
-                        // Atualizar o valor de Acoluna5 no banco de dados
-                        var administrativo = administrativosNormalizados
+                        // Verificar e atualizar Acoluna5 no banco de dados
+                        var administrativo = TabelaExcel
                             .FirstOrDefault(a => a.Acoluna1 == item.Ccoluna2);
 
-                        if (administrativo != null)
+                        if (administrativo != null && administrativo.Acoluna5 != item.Ccoluna16.Trim())
                         {
-                            // Encontrar o item correspondente na tabela Administrativo
                             var itemParaAtualizar = await _context.Administrativo
-                                .FirstOrDefaultAsync(a => a.Id == administrativo.AcolunaId);
+                                .FirstOrDefaultAsync(a => a.Id == administrativo.Id);
 
                             if (itemParaAtualizar != null)
                             {
-                                // Atualizar Acoluna5 com o valor de Ccoluna16
                                 itemParaAtualizar.Acoluna5 = item.Ccoluna16.Trim();
                                 _context.Administrativo.Update(itemParaAtualizar);
                             }
@@ -80,11 +71,20 @@ public class CategoriaService
                     }
                 }
 
-                // Salvar as alterações no banco de dados
+                // Salvar alterações no banco
                 await _context.SaveChangesAsync();
-            }
 
-            Console.WriteLine($"Arquivo salvo em: {filePath}");
+                // Confirmar transação
+                await transaction.CommitAsync();
+
+                Console.WriteLine($"Arquivo salvo em: {filePath}");
+            }
+            catch (Exception ex)
+            {
+                // Reverter transação em caso de erro
+                await transaction.RollbackAsync();
+                Console.WriteLine($"Erro ao processar: {ex.Message}");
+            }
         }
         else
         {

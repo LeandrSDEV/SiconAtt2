@@ -178,6 +178,69 @@ public class FAPENSaoJoseLajeService
     }
 
 }
+//======================================    BELO MONTE    ============================================\\
+
+public class BeloMonteService
+{
+    private static readonly Dictionary<string, string> Vinculo = new()
+    {
+        { "Efetivo", "2" },
+        { "Contratado", "5" },
+        { "Comissionado", "7" },
+        { "Aposentado", "4" },
+        { "Pensionista", "1" },
+        { "Eletivo", "13" },
+    };
+
+    public Task<List<ContrachequeModel>> ProcessarArquivoAsync(string[] colunas, Status status)
+    {
+        var contracheque = ContrachequeAL.CriarContracheque(colunas, "BELO MONTE");
+
+        if (contracheque.Ccoluna1 == "SECRETARIA MUNICIPAL DE EDUCACAO")
+        {
+            contracheque.Ccoluna21 = "3";
+        }
+        if (contracheque.Ccoluna1 == "SECRETARIA MUNICIPAL DE SAUDE")
+        {
+            contracheque.Ccoluna21 = "3";
+        }
+        if (contracheque.Ccoluna1 == "INSTITUTO DE PREVIDENCIA DE BELO MONTE")
+        {
+            contracheque.Ccoluna21 = "2";
+        }
+        if (contracheque.Ccoluna1 == "PREFEITURA MUNICIPAL DE BELO MONTE")
+        {
+            contracheque.Ccoluna21 = "1";
+        }
+        if (contracheque.Ccoluna1 == "PREFEITURA MUNICIPAL DE BELO MONTE")
+        {
+            contracheque.Ccoluna21 = "1";
+        }
+
+        if (Vinculo.ContainsKey(colunas[16].Trim()))
+        {
+            contracheque.Ccoluna16 = Vinculo[colunas[16].Trim()];
+        }
+
+        switch (contracheque.Ccoluna16)
+        {
+            case "1":
+            case "4":
+                contracheque.Ccoluna18 = "636";
+                break;
+            case "2":
+                contracheque.Ccoluna18 = "624";
+                break;
+            default:
+                contracheque.Ccoluna18 = "625";
+                break;
+        }
+
+
+        return Task.FromResult(new List<ContrachequeModel> { contracheque });
+    }
+
+}
 
 
 

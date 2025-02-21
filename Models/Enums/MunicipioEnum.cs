@@ -18,6 +18,8 @@
         FMS_Cupira_PE = 14, 
         PREF_SantaMariaDaVitoria_BA = 15, 
         FAPEN_SaoJoseDaSaje_AL = 16, 
+        PREF_BeloMonte_AL = 17, 
+        PREF_CabaceiraDoParaguacu_BA = 18, 
     }
 
 }
