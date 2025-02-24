@@ -390,3 +390,92 @@ public class CabaceiraParaguacuService
     }
 
 }
+
+//======================================    CANARANA    ============================================\\
+
+public class CanaranaService
+{
+    private static readonly Dictionary<string, string> MapeamentoStatus = new()
+    {
+       { "Estatut?rio", "10" },
+       { "Agente Pol?tico", "13" },
+       { "Cargo em Comiss?o", "7" },
+       { "Trabalhador Tempor?rio", "11" },
+       { "Conselho Tutelar", "17" },
+    };
+
+    public Task<List<ContrachequeModel>> ProcessarArquivoAsync(string[] colunas, Status status)
+    {
+        var contracheque = ContrachequeBA.CriarContracheque(colunas, "CANARANA");
+
+        if (contracheque.Ccoluna1 == "PREFEITURA MUNICIPAL DE CANARANA")
+        {
+            contracheque.Ccoluna19 = "758";
+        }
+        if (contracheque.Ccoluna1 == "FUNDO MUNICIPAL DE SAUDE DE CANARANA")
+        {
+            contracheque.Ccoluna19 = "60";
+        }
+
+        if (MapeamentoStatus.ContainsKey(colunas[16].Trim()))
+        {
+            contracheque.Ccoluna16 = MapeamentoStatus[colunas[16].Trim()];
+        }
+
+        switch (contracheque.Ccoluna16)
+        {
+            case "10":
+                contracheque.Ccoluna18 = "264";
+                break;
+            default:
+                contracheque.Ccoluna18 = "269";
+                break;
+        }
+
+        return Task.FromResult(new List<ContrachequeModel> { contracheque });
+    }
+
+}
+
+//======================================    LAMARÃO    ============================================\\
+
+public class LamaraoService
+{
+    private static readonly Dictionary<string, string> MapeamentoStatus = new()
+    {
+       { "ESTATUTARIO", "10" },
+       { "Trabalhador Temporário", "11" },
+       { "Estatutário - Comissão", "15" },
+       { "Cargo em Comissão", "7" },
+       { "Agente Político", "13" },
+    };
+
+    public Task<List<ContrachequeModel>> ProcessarArquivoAsync(string[] colunas, Status status)
+    {
+        var contracheque = ContrachequeBA.CriarContracheque(colunas, "LAMARAO");
+
+        if (contracheque.Ccoluna1 == "PREFEITURA MUNICIPAL DE LAMARAO")
+        {
+            contracheque.Ccoluna19 = "1";
+        }
+
+        if (MapeamentoStatus.ContainsKey(colunas[16].Trim()))
+        {
+            contracheque.Ccoluna16 = MapeamentoStatus[colunas[16].Trim()];
+        }
+
+        switch (contracheque.Ccoluna16)
+        {
+            case "10":
+            case "15":
+                contracheque.Ccoluna18 = "953";
+                break;
+            default:
+                contracheque.Ccoluna18 = "954";
+                break;
+        }
+
+        return Task.FromResult(new List<ContrachequeModel> { contracheque });
+    }
+
+}

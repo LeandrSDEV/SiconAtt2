@@ -21,7 +21,10 @@
         PREF_BeloMonte_AL = 17, 
         PREF_CabaceiraDoParaguacu_BA = 18, 
         PREF_Miranda_MS = 19, 
-        FUNDO_Moncao_MA = 20, 
+        FUNDO_Moncao_MA = 20,
+        PREF_Cambira_PR = 21,
+        PREF_Vicosa_AL = 22,
+        PREF_Canarana_BA = 23,
+        PREF_Lamarao_BA = 24,
     }
-
 }

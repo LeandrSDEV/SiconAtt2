@@ -22,9 +22,7 @@ public class GeradorDePerfil
         // Código do município correspondente ao status selecionado
         string codigoMunicipio = statusSelecionado switch
         {
-            Status.PREF_Abare_BA => "123456", // Código fixo para PREF_Abare_BA
-            Status.PREF_Cupira_PE => "654321", // Código fixo para PREF_Cupira_PE
-            Status.PREF_Alcinópolis_MS => "789012",
+            Status.PREF_Cansanção_BA => "1126", // Código fixo para PREF_Abare_BA
             Status.PREF_Anadia_AL => "2411",
             _ => "000000" // Código padrão para status desconhecidos
         };
@@ -64,8 +62,9 @@ public class GeradorDePerfil
     {
         return statusSelecionado switch
         {           
-            Status.PREF_Anadia_AL => acoluna5 == "2", 
-            _ => false // Ignora para qualquer outro status ou valor
+            Status.PREF_Anadia_AL => acoluna5 == "2",
+            Status.PREF_Cansanção_BA => acoluna5 == "10",
+            _ => false
         };
     }
 

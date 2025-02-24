@@ -144,9 +144,9 @@ public class FAPENSaoJoseLajeService
 {
     private static readonly Dictionary<string, string> Vinculo = new()
     {
-        { "Inativo(a)", "28" },       
-        { "Pensionista", "7" },       
-        { "Cargo em Comissao", "1" },       
+        { "Inativo(a)", "4" },       
+        { "Pensionista", "1" },       
+        { "Cargo em Comissao", "7" },
     };
 
     public Task<List<ContrachequeModel>> ProcessarArquivoAsync(string[] colunas, Status status)
@@ -166,6 +166,7 @@ public class FAPENSaoJoseLajeService
         switch (contracheque.Ccoluna16)
         {           
             case "1":
+            case "4":
                 contracheque.Ccoluna18 = "766";
                 break;
             default:
@@ -242,5 +243,45 @@ public class BeloMonteService
 
 }
 
+//======================================    VIÇOSA    ============================================\\
 
+public class VicosaService
+{
+    private static readonly Dictionary<string, string> Vinculo = new()
+    {
+        { "COMISSIONADO ESTATUTARIO", "15" },
+        { "ESTATUT?RIO", "10" },
+        { "ELETIVO", "13" },
+        { "TEMPOR?RIO ESTATUT?RIO", "11" },
+        { "CEDIDO COM ONUS PARA O CESSIONARIO", "33" },
+        { "CONSELHEIRO TUTELAR", "17" },
+        { "JOVEM APRENDIZ", "8" },
+    };
+
+    public Task<List<ContrachequeModel>> ProcessarArquivoAsync(string[] colunas, Status status)
+    {
+        var contracheque = ContrachequeAL.CriarContracheque(colunas, "VICOSA");
+
+        if (contracheque.Ccoluna1 == "SECRETARIA MUNICIPAL DE EDUCACAO")
+        {
+            contracheque.Ccoluna21 = "3";
+        }
+
+        if (Vinculo.ContainsKey(colunas[16].Trim()))
+        {
+            contracheque.Ccoluna16 = Vinculo[colunas[16].Trim()];
+        }
+
+        switch (contracheque.Ccoluna16)
+        {         
+            default:
+                contracheque.Ccoluna18 = "149";
+                break;
+        }
+
+
+        return Task.FromResult(new List<ContrachequeModel> { contracheque });
+    }
+
+}
 

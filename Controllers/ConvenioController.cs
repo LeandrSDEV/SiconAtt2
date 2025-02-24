@@ -40,6 +40,10 @@ namespace Servidor.Controllers
         private readonly CabaceiraParaguacuService _cabaceiraParaguacuService;
         private readonly MirandaService _mirandaService;
         private readonly FundoMoncaoService _fundoMoncaoService;
+        private readonly CambiraService _cambiraService;
+        private readonly VicosaService _vicosaService;
+        private readonly CanaranaService _canaranaService;
+        private readonly LamaraoService _lamaraoService;
 
         public ConvenioController(BancoContext context, AbareService abareservice, 
                                   CupiraService cupiraservice, CansancaoService cansancaoservice,
@@ -54,7 +58,9 @@ namespace Servidor.Controllers
                                   RemansoService remansoService, FMSCupiraService fMSCupiraService,
                                   SantaMariaVitoriaService santaMariaVitoriaService, FAPENSaoJoseLajeService fAPENSaoJoseLajeService,
                                   BeloMonteService beloMonteService, CabaceiraParaguacuService cabaceiraParaguacuService,
-                                  MirandaService mirandaService, FundoMoncaoService fundoMoncaoService)
+                                  MirandaService mirandaService, FundoMoncaoService fundoMoncaoService,
+                                  CambiraService cambiraService, VicosaService vicosaService,
+                                  CanaranaService canaranaService, LamaraoService lamaraoService)
         {
             _context = context;
             _servidorService = servidorService;
@@ -84,6 +90,10 @@ namespace Servidor.Controllers
             _cabaceiraParaguacuService = cabaceiraParaguacuService;
             _mirandaService = mirandaService;
             _fundoMoncaoService = fundoMoncaoService;
+            _cambiraService = cambiraService;
+            _vicosaService = vicosaService;
+            _canaranaService = canaranaService;
+            _lamaraoService = lamaraoService;
         }
 
         public IActionResult Index()
@@ -139,6 +149,10 @@ namespace Servidor.Controllers
                     { Status.PREF_CabaceiraDoParaguacu_BA, colunas => _cabaceiraParaguacuService.ProcessarArquivoAsync(colunas, Status.PREF_CabaceiraDoParaguacu_BA) },
                     { Status.PREF_Miranda_MS, colunas => _mirandaService.ProcessarArquivoAsync(colunas, Status.PREF_Miranda_MS) },
                     { Status.FUNDO_Moncao_MA, colunas => _fundoMoncaoService.ProcessarArquivoAsync(colunas, Status.FUNDO_Moncao_MA) },
+                    { Status.PREF_Cambira_PR, colunas => _cambiraService.ProcessarArquivoAsync(colunas, Status.PREF_Cambira_PR) },
+                    { Status.PREF_Vicosa_AL, colunas => _vicosaService.ProcessarArquivoAsync(colunas, Status.PREF_Vicosa_AL) },
+                    { Status.PREF_Canarana_BA, colunas => _canaranaService.ProcessarArquivoAsync(colunas, Status.PREF_Canarana_BA) },
+                    { Status.PREF_Lamarao_BA, colunas => _lamaraoService.ProcessarArquivoAsync(colunas, Status.PREF_Lamarao_BA) },
 };
 
                 if (serviceMap.TryGetValue(status.StatusSelecionado, out var processarArquivo))
@@ -230,6 +244,8 @@ namespace Servidor.Controllers
                             { "COMISSIONADOS", "7" },
                             { "Concursado", "2" },
                             { "Estável", "16" },
+                            { "Temporário/Estatutário", "11" },
+                            { "Comissionado/Estatutário", "15" },
                         };                      
 
                          //Atualiza Acoluna5 com base no mapeamento
@@ -298,9 +314,14 @@ namespace Servidor.Controllers
                 case Status.PREF_CabaceiraDoParaguacu_BA: return "Município de Cabaceiras do Paraguaçu/BA";
                 case Status.PREF_Miranda_MS: return "Município de Miranda/MS";
                 case Status.FUNDO_Moncao_MA: return "Fundo Municipal de Saúde de Monção/MA";
+                case Status.PREF_Cambira_PR: return "Município de Cambira/PR";
+                case Status.PREF_Vicosa_AL: return "Município de Viçosa/AL";
+                case Status.PREF_Canarana_BA: return "Município de Canarana/BA";
+                case Status.PREF_Lamarao_BA: return "Município de Lamarão/BA";
                 default: return "Selecione o Município";
             }
         }
     }
+    
 
 }

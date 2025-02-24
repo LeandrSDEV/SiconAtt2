@@ -30,6 +30,10 @@ builder.Services.AddScoped<BeloMonteService>();
 builder.Services.AddScoped<CabaceiraParaguacuService>();
 builder.Services.AddScoped<MirandaService>();
 builder.Services.AddScoped<FundoMoncaoService>();
+builder.Services.AddScoped<CambiraService>();
+builder.Services.AddScoped<VicosaService>();
+builder.Services.AddScoped<CanaranaService>();
+builder.Services.AddScoped<LamaraoService>();
 
 builder.Services.AddScoped<MatriculaService>();
 builder.Services.AddScoped<SecretariaService>();

@@ -149,13 +149,28 @@ public class SecretariaService
             Status.FUNDO_Moncao_MA =>
                 (c.Ccoluna21 == "7" && acoluna4 != "FUNDO MUNICIPAL DE SAÚDE DE MONÇÃO/MA" && acoluna4 != "7"),
 
+            Status.PREF_Lamarao_BA =>
+            (c.Ccoluna21 == "1" && acoluna4 != "PREFEITURA" && acoluna4 != "1"),
+
+            Status.PREF_Canarana_BA =>
+            (c.Ccoluna21 == "758" && acoluna4 != "PREFEITURA MUNICIPAL DE CANARANA" && acoluna4 != "758") ||
+            (c.Ccoluna21 == "60" && acoluna4 != "FUNDO MUNICIPAL DE SAUDE DE CANARANA" && acoluna4 != "60"),
+
             Status.PREF_BeloMonte_AL =>
                 (c.Ccoluna21 == "3" && acoluna4 != "SAÚDE / EDUCAÇÃO" && acoluna4 != "3")||
                 (c.Ccoluna21 == "2" && acoluna4 != "PREVIDÊNCIA DE BELO MONTE/AL" && acoluna4 != "2")||
                 (c.Ccoluna21 == "1" && acoluna4 != "MUNICÍPIO DE BELO MONTE/AL" && acoluna4 != "1"),
 
+            Status.PREF_Cambira_PR =>
+                (c.Ccoluna21 == "3" && acoluna4 != "EDUCAÇÃO" && acoluna4 != "3") ||
+                (c.Ccoluna21 == "2" && acoluna4 != "SAÚDE" && acoluna4 != "2") ||
+                (c.Ccoluna21 == "1" && acoluna4 != "PREFEITURA" && acoluna4 != "1"),
+
             Status.FAPEN_SaoJoseDaSaje_AL =>
                 (c.Ccoluna21 == "1" && acoluna4 != "PREVIDÊNCIA" && acoluna4 != "1"),
+
+            Status.PREF_XiqueXique_BA =>
+            (c.Ccoluna21 == "1" && acoluna4 != "PREFEITURA MUNICIPAL DE XIQUE-XIQUE" && acoluna4 != "1"),
 
             Status.PREF_Anadia_AL =>
                 (c.Ccoluna21 == "300" && acoluna4 != "PREFEITURA MUNICIPAL DE ANADIA" && acoluna4 != "300") ||
