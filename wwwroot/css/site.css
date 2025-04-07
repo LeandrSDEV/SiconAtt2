@@ -19,20 +19,14 @@ h3 {
 }
 
 .form-label {
-    color: #f2f2f2;
+    color:white;
 }
 
-.btn-primary {
-    background-color: #5e72e4;
-    border-color: #5e72e4;
-    transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+.btn-primary:hover {
+    background-color: #4e62d5;
+    border-color: #4e62d5;
+    transform: scale(1.05);
 }
-
-    .btn-primary:hover {
-        background-color: #4e62d5;
-        border-color: #4e62d5;
-        transform: scale(1.05);
-    }
 
 .txtcss, .excelcss {
     background-color: rgb(33, 31, 31, 0,47);
@@ -51,54 +45,12 @@ h3 {
         box-shadow: 0px 15px 40px rgba(0, 0, 0, 0.5);
     }
 
-.form-control {
-    border-radius: 5px;
-    border: 1px solid #ddd;
-    padding: 10px;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
 
-    .form-control:focus {
-        border-color: #6200ea;
-        box-shadow: 0 0 0 0.25rem rgba(98, 0, 234, 0.25);
-    }
 
 select.form-select {
     border-radius: 5px;
     border: 1px solid #ddd;
     padding: 10px;
-}
-
-.navbar-light .navbar-toggler-icon {
-    background-color: #6200ea;
-}
-
-.navbar-nav .nav-link {
-    color: #f5f5f5;
-    transition: color 0.3s ease;
-}
-
-    .navbar-nav .nav-link:hover {
-        color: #fff;
-    }
-
-footer {
-    background-color: rgba(0, 0, 0, 0.8);
-    padding: 10px;
-}
-
-
-.Layout2 {
-    font-family: 'Roboto', sans-serif;
-    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-    min-height: 100vh;
-    margin: 0;
-    padding-top: 60px; /* Espaço para a navbar */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-    overflow: hidden;
 }
 
 .navbar {
@@ -115,41 +67,6 @@ footer {
     align-items: center;
 }
 
-    .navbar .title {
-        font-size: 1.2rem;
-        font-weight: bold;
-    }
-
-    .navbar .clock {
-        font-size: 1rem;
-    }
-
-.clock-container {
-    position: absolute;
-    top: 10px;
-    right: 20px;
-    color: #ffffff;
-    font-size: 1.2rem;
-    font-weight: bold;
-}
-
-.login-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.login-card {
-    width: 100%;
-    max-width: 400px;
-    padding: 30px;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border-radius: 20px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 2.5);
-    color: white;
-}
-
 footer {
     position: fixed;
     bottom: 0;
@@ -159,4 +76,16 @@ footer {
     color: white;
     text-align: center;
     padding: 10px 0;
+}
+
+/* Modal customizado */
+.modal-content {
+    border-radius: 10px;
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.modal-body {
+    font-size: 1.2em;
+    color: #ddd;
 }

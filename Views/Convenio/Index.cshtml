@@ -1,4 +1,4 @@
-﻿@model Servidor.Models.EnumModel
+﻿@model Servidor.Models.SelectOptionModel
 
 @{
     ViewData["Title"] = "Atualização de Servidor";
@@ -9,33 +9,137 @@
 <div class="bodylayout1">
     <h3 class="display-3 my-3 text-center">ATUALIZAÇÃO DE SERVIDOR</h3>
 
-<br />
-<form asp-controller="Convenio" asp-action="ProcessarArquivo" method="post" enctype="multipart/form-data">
-    <div class="w-50 my-3 m-auto">
-        <label for="StatusSelecionado" class="form-label">Município:</label>
-        <select asp-for="StatusSelecionado" class="form-select" asp-items="ViewBag.Statuses">
-            <option value=""> < --- Selecione o município  --- ></option>
-        </select>
-    </div>
     <br />
-    <div class="d-flex justify-content-between">
-        <div class="txtcss">
-            <label for="arquivoTxt" class="form-label">Arquivo Contracheque:</label>
-            <input type="file" id="arquivoTxt" name="arquivoTxt" accept=".txt" class="form-control" />
+    <form asp-controller="Convenio" asp-action="ProcessarArquivo" method="post" enctype="multipart/form-data">
+        <div class="w-50 my-3 m-auto">
+            <label for="SelectOption" class="form-label">Município:</label>
+            <select id="SelectOption" name="SelectOptionId" class="form-select">
+                <option value=""> < --- Selecione o município  --- ></option>
+                @foreach (var item in ViewBag.Statuses as List<SelectListItem>)
+                {
+                    <option value="@item.Value">@item.Text</option>
+                }
+            </select>
+        </div>
+        <br />
+        <div class="d-flex justify-content-between">
+            <div class="txtcss">
+                <label for="arquivoTxt" class="form-label">Arquivo Contracheque:</label>
+                <input type="file" id="arquivoTxt" name="arquivoTxt" accept=".txt" class="form-control" />
+            </div>
+
+            <div class="excelcss">
+                <label for="arquivoExcel" class="form-label">Arquivo Administrador:</label>
+                <input type="file" id="arquivoExcel" name="arquivoExcel" accept=".xls" class="form-control" />
+            </div>
         </div>
 
-        <div class="excelcss">
-            <label for="arquivoExcel" class="form-label">Arquivo Administrador:</label>
-            <input type="file" id="arquivoExcel" name="arquivoExcel" accept=".xls" class="form-control" />
+        <br />
+        <br />
+        <br />
+
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary w-25" id="btnProcessar">Processar</button>
+        </div>
+    </form>
+</div>
+
+<!-- Modal Ccoluna1 -->
+<div class="modal fade" id="modalCcoluna1" tabindex="-1" aria-labelledby="modalCcoluna1Label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalCcoluna1Label">Qual o código da SECRETÁRIA?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="valoresCcoluna1Container">
+                    <!-- Os valores de Ccoluna1 serão inseridos aqui -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-primary" onclick="atualizarValoresCcoluna1()">Salvar Alterações</button>
+                <button type="button" class="btn btn-primary" onclick="abrirModalCargo()">Próximo</button>
+            </div>
         </div>
     </div>
+</div>
 
-    <br />
-    <br />
-    <br />
-
-    <div class="text-center">
-        <button type="submit" class="btn btn-primary w-25">Atualizar</button>
+<!-- Modal Cargo -->
+<div class="modal fade" id="modalCargo" tabindex="-1" aria-labelledby="modalCargoLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalCargoLabel">Qual o código da SECRETÁRIA? (Caso seja separado por CARGO)</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="valoresCargoContainer">
+                    <!-- Os valores de Cargo serão inseridos aqui -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-primary" onclick="atualizarValoresCargo()">Salvar Alterações</button>
+                <button type="button" class="btn btn-primary" onclick="abrirModalCcoluna16()">Próximo</button>
+            </div>
+        </div>
     </div>
-</form>
+</div>
+
+<!-- Modal Ccoluna16 -->
+<div class="modal" id="modalCcoluna16">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h5 class="modal-title">Qual o código dos VINCULOS?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <!-- Modal Body -->
+            <div class="modal-body" id="valoresContainer"></div>
+            <!-- Modal Footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-primary" onclick="atualizarValoresCcoluna16()">Salvar Alterações</button>
+                <button type="button" class="btn btn-primary" onclick="abrirModalCalculo()">Próximo</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Calculo -->
+<div class="modal" id="modalCalculo">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Qual o código do Perfil de Cálculo?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="valoresCalculoContainer"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                <button type="button" class="btn btn-primary" onclick="atualizarValoresCcoluna18()">Finalizar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Discrepancias -->
+<div class="modal fade" id="modalDiscrepancias" tabindex="-1" aria-labelledby="modalDiscrepanciasLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Discrepâncias Encontradas</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body" id="discrepanciasContainer">
+                <!-- Conteúdo será inserido via JavaScript -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal" onclick="location.reload()">Entendido</button>
+            </div>
+        </div>
+    </div>
 </div>

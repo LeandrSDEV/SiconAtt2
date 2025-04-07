@@ -13,68 +13,62 @@ public class CategoriaService
 
     public async Task GerarVinculoAsync()
     {
-        // Carregar apenas os dados necessários
+        // Carregar os dados do Contracheque
         var TabelaTxt = await _context.Contracheque
-            .Select(c => new { c.Ccoluna2, c.Ccoluna3, c.Ccoluna16 })
+            .Select(c => new
+            {
+                CPF = c.Ccoluna2.Trim(),
+                Matricula = c.Ccoluna3.TrimStart('0'),
+                Categoria = c.Ccoluna16.Trim(),
+                Concatenado = $"{c.Ccoluna2.Trim()}{c.Ccoluna3.TrimStart('0')}{c.Ccoluna16.Trim()}"
+            })
             .ToListAsync();
 
-        var TabelaExcel = await _context.Administrativo
-            .Select(a => new { a.Id, a.Acoluna1, a.Acoluna5 })
+        // Carregar os dados do Administrativo
+        var TabelaAdministrativo = await _context.Administrativo
+            .Select(a => new
+            {
+                CPF = a.Acoluna1.Trim(),
+                Matricula = a.Acoluna2.TrimStart('0'),
+                Categoria = a.Acoluna5.Trim(),
+                Concatenado = $"{a.Acoluna1.Trim()}{a.Acoluna2.TrimStart('0')}{a.Acoluna5.Trim()}"
+            })
             .ToListAsync();
 
-        // Identificar as discrepâncias
+        // Identificar as discrepâncias comparando os valores concatenados
         var discrepancias = TabelaTxt
-    .Where(c =>
-        TabelaExcel.Any(a => a.Acoluna1 == c.Ccoluna2) && // Verificar se Ccoluna2 existe na Acoluna1
-        !TabelaExcel.Any(a =>
-            a.Acoluna1 == c.Ccoluna2 && // Correspondência Acoluna1 <-> Ccoluna2
-            a.Acoluna5.Trim().Equals(c.Ccoluna16.Trim(), StringComparison.OrdinalIgnoreCase) // Comparação Acoluna5 <-> Ccoluna16
-        )
-    )
-    .ToList();
+            .Where(txt => !TabelaAdministrativo.Any(admin => admin.Concatenado == txt.Concatenado))
+            .ToList();
 
         if (discrepancias.Any())
         {
-            // Agrupar discrepâncias por Ccoluna2
-            var discrepanciasAgrupadas = discrepancias.GroupBy(d => d.Ccoluna2);
-
             var desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
             var filePath = Path.Combine(desktopPath, "CATEGORIA.txt");
 
             using var writer = new StreamWriter(filePath);
-
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
-                foreach (var grupo in discrepanciasAgrupadas)
+                foreach (var item in discrepancias)
                 {
-                    foreach (var item in grupo)
+                    // Escrever no arquivo
+                    await writer.WriteLineAsync($"{item.CPF};{item.Matricula};{item.Categoria}");
+
+                    // Atualizar no banco de dados
+                    var administrativo = await _context.Administrativo
+                        .FirstOrDefaultAsync(a =>
+                            a.Acoluna1.Trim() == item.CPF &&
+                            a.Acoluna2.TrimStart('0') == item.Matricula
+                        );
+
+                    if (administrativo != null)
                     {
-                        // Escrever no arquivo
-                        await writer.WriteLineAsync($"{item.Ccoluna2};{item.Ccoluna3};{item.Ccoluna16}");
-
-                        // Verificar e atualizar Acoluna5 no banco de dados
-                        var administrativo = TabelaExcel
-                            .FirstOrDefault(a => a.Acoluna1 == item.Ccoluna2);
-
-                        if (administrativo != null && administrativo.Acoluna5 != item.Ccoluna16.Trim())
-                        {
-                            var itemParaAtualizar = await _context.Administrativo
-                                .FirstOrDefaultAsync(a => a.Id == administrativo.Id);
-
-                            if (itemParaAtualizar != null)
-                            {
-                                itemParaAtualizar.Acoluna5 = item.Ccoluna16.Trim();
-                                _context.Administrativo.Update(itemParaAtualizar);
-                            }
-                        }
+                        administrativo.Acoluna5 = item.Categoria;
                     }
                 }
 
-                // Salvar alterações no banco
+                // Salvar alterações no banco de dados
                 await _context.SaveChangesAsync();
-
-                // Confirmar transação
                 await transaction.CommitAsync();
 
                 Console.WriteLine($"Arquivo salvo em: {filePath}");

@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Servidor.Data;
-using Servidor.Models.Enums;
+using Servidor.Models;
 
 namespace Servidor.ErrosService
 {
@@ -13,150 +13,100 @@ namespace Servidor.ErrosService
             _bancoContext = bancoContext;
         }
 
-        //==================================  CÁLCULO =================================//
-
-        public async Task GeradorPerfilCalculo(Status statusSelecionado)
+        //============================== PERFIL DE CÁLCULO ==============================//
+        public async Task GeradorPerfilCalculo()
         {
-            var tabelaExcel = await _bancoContext.Administrativo.ToListAsync();
-            var resultado = new List<string>();
+            var tabelaTxt = await _bancoContext.Contracheque.AsNoTracking().ToListAsync();
+            var tabelaExcel = await _bancoContext.Administrativo.AsNoTracking().ToListAsync();
 
-            foreach (var linha in tabelaExcel)
+            var duplicados = tabelaExcel
+                .Where(a => !string.IsNullOrWhiteSpace(a.Acoluna1) && !string.IsNullOrWhiteSpace(a.Acoluna2))
+                .GroupBy(a => $"{a.Acoluna1.Trim()}{a.Acoluna2.Trim()}")
+                .Where(g => g.Count() > 1)
+                .ToList();
+
+            var duplicidadesDiscrepantes = new List<string>();
+
+            // Dicionário final ignorando duplicatas (pega a primeira ocorrência apenas)
+            var administrativosMap = new Dictionary<string, (string ValorNumerico, AdministrativoModel Entidade)>();
+
+            foreach (var grupo in tabelaExcel
+                .Where(a => !string.IsNullOrWhiteSpace(a.Acoluna1) && !string.IsNullOrWhiteSpace(a.Acoluna2))
+                .GroupBy(a => $"{a.Acoluna1.Trim()}{a.Acoluna2.Trim()}"))
             {
-                var valorAcoluna6 = linha.Acoluna6?.Split('-').LastOrDefault()?.Trim();
-                var acoluna5 = linha.Acoluna5.Trim(); // Normaliza o valor para evitar múltiplos trims no switch
+                var chave = grupo.Key;
+                var primeiro = grupo.First();
+                administrativosMap[chave] = (ExtrairNumeros(primeiro.Acoluna6), primeiro);
 
-                var valorResultado = statusSelecionado switch
+                if (grupo.Count() > 1)
                 {
-                    Status.PREF_XiqueXique_BA => "265",
-                    Status.PREF_Alcinópolis_MS => "794",
-                    Status.FUNPREBO_Bodoco_PE => "391",
-                    Status.PREF_Remanso_BA => "353",
-                    Status.PREF_Vicosa_AL => "149",
-                    Status.PREF_Cupira_PE => acoluna5 switch
-                    {
-                        "33" or "2" => "926",
-                        _ => "943"
-                    },                    
-                    Status.PREF_Cansanção_BA => acoluna5 switch
-                    {
-                        "10" => "128",
-                        _ => "833"
-                    },
-                    Status.PREF_Abare_BA => acoluna5 switch
-                    {
-                        "2" => "678",
-                        _ => "679"
-                    },
-                    Status.PREF_Cafarnaum_BA => acoluna5 switch
-                    {
-                        "1" or "10" => "936",
-                        _ => "937"
-                    },
-                    Status.PREF_Indiaporã_SP => acoluna5 switch
-                    {
-                        "2" => "964",
-                        _ => "965"
-                    },
-                    Status.PREF_Anadia_AL => acoluna5 switch
-                    {
-                        "2" => "171",
-                        _ => "329"
-                    },
-                    Status.PREF_BeloMonte_AL => acoluna5 switch
-                    {
-                        "1" or "4" => "636",
-                        "2" => "624",
-                        _ => "625"
-                    },
-                    Status.PREF_CabaceiraDoParaguacu_BA => acoluna5 switch
-                    {
-                        "1" or "2" or "15" => "987",
-                        _ => "988"
-                    },
-                    Status.PREF_Bodoco_PE => acoluna5 switch
-                    {
-                        "1" or "2" => "390",
-                        _ => "392"
-                    },
-                    Status.FMS_Cupira_PE => acoluna5 switch
-                    {
-                        "2" => "928",
-                        _ => "996"
-                    },
-                    Status.PREF_Canarana_BA => acoluna5 switch
-                    {
-                        "10" => "264",
-                        _ => "269"
-                    },
-                    Status.FAPEN_SaoJoseDaSaje_AL => acoluna5 switch
-                    {
-                        "1" or "4" => "766",
-                        _ => "767"
-                    },
-                    Status.PREF_Miranda_MS => acoluna5 switch
-                    {
-                        "1" or "2" or "4" or "9" => "299",
-                        _ => "309"
-                    },
-                    Status.PREF_SantaMariaDaVitoria_BA => acoluna5 switch
-                    {
-                        "1" or "4" or "10" or "13" => "1009",
-                        _ => "1010"
-                    },
-                    Status.PREF_Catu_BA => acoluna5 switch
-                    {
-                        "10" or "17" => "994",
-                        _ => "995"
-                    },
-                    Status.FUNDO_Moncao_MA => acoluna5 switch
-                    {
-                        "2" or "16" => "925",
-                        _ => "938"
-                    },
-                    Status.PREF_Lamarao_BA => acoluna5 switch
-                    {
-                        "10" or "15" => "953",
-                        _ => "954"
-                    },
-                    Status.PREF_GirauDoPonciano => acoluna5 switch
-                    {
-                        "1" or "2" or "4" => "793",
-                        _ => "743"
-                    },
-                    Status.PREF_Cambira_PR => (acoluna5, linha.Acoluna4.Trim()) switch
-                    {
-                        ("1", "PREFEITURA") or ("13", "PREFEITURA") or ("17", "PREFEITURA")
-                        or ("4", "PREFEITURA") or ("9", "PREFEITURA") or ("10", "PREFEITURA") or ("7", "PREFEITURA") => "1014",
-
-                        ("1", "SAÚDE") or ("13", "SAÚDE") or ("17", "SAÚDE")
-                        or ("4", "SAÚDE") or ("9", "SAÚDE") or ("10", "SAÚDE") or ("7", "SAÚDE") => "1015",
-
-                        ("1", "EDUCAÇÃO") or ("13", "EDUCAÇÃO") or ("17", "EDUCAÇÃO" )
-                        or ("4", "EDUCAÇÃO") or ("9", "EDUCAÇÃO") or ("10", "EDUCAÇÃO") or ("7", "EDUCAÇÃO") => "1016",
-
-                        _ => "1017"
-                    },
-                    _ => throw new ArgumentException("Status inválido.")
-                };
-
-                if (valorAcoluna6 == valorResultado)
-                    continue; // Ignora se já está correto
-
-                resultado.Add($"{linha.Acoluna1};{linha.Acoluna2};{valorResultado}");
+                    duplicidadesDiscrepantes.Add(chave);
+                }
             }
 
-            if (!resultado.Any())
+            var discrepancias = new List<ContrachequeModel>();
+
+            foreach (var linha in tabelaTxt)
             {
-                Console.WriteLine("Nenhuma discrepância encontrada. Arquivo não foi gerado.");
-                return;
+                if (string.IsNullOrWhiteSpace(linha.Ccoluna2) || string.IsNullOrWhiteSpace(linha.Ccoluna3))
+                    continue;
+
+                var chaveTxt = $"{linha.Ccoluna2.Trim()}{linha.Ccoluna3.Trim()}";
+                var valorNumericoTxt = ExtrairNumeros(linha.Ccoluna18);
+
+                if (administrativosMap.TryGetValue(chaveTxt, out var administrativo))
+                {
+                    if (administrativo.ValorNumerico != valorNumericoTxt)
+                    {
+                        discrepancias.Add(linha);
+                    }
+                }
+                else
+                {
+                    // Se não encontrar a chave, também considera discrepância
+                    discrepancias.Add(linha);
+                }
             }
 
             var desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-            var filePath = Path.Combine(desktopPath, "PERFIL DE CALCULO.txt");
 
-            await File.WriteAllLinesAsync(filePath, resultado);
+            // Salvar discrepâncias de valor SEM duplicação por CPF + Matrícula
+            if (discrepancias.Any())
+            {
+                var filePath = Path.Combine(desktopPath, "PERFIL DE CALCULO.txt");
+                using var writer = new StreamWriter(filePath);
 
-            Console.WriteLine($"Arquivo salvo em: {filePath}");
+                var chavesRegistradas = new HashSet<string>();
+
+                foreach (var item in discrepancias)
+                {
+                    var cpf = item.Ccoluna2?.Trim() ?? "";
+                    var matricula = item.Ccoluna3?.Trim() ?? "";
+                    var valor = item.Ccoluna18?.Trim() ?? "";
+
+                    var chaveUnica = $"{cpf}{matricula}";
+
+                    if (!chavesRegistradas.Contains(chaveUnica))
+                    {
+                        await writer.WriteLineAsync($"{cpf};{matricula};{valor}");
+                        chavesRegistradas.Add(chaveUnica);
+                    }
+                }
+
+                Console.WriteLine($"✅ Arquivo 'PERFIL DE CALCULO.txt' gerado com {chavesRegistradas.Count} discrepâncias únicas.");
+            }
+            else
+            {
+                Console.WriteLine("✅ Nenhuma discrepância de valor encontrada.");
+            }
+        
+        }
+
+        private string ExtrairNumeros(string input)
+        {
+            return string.IsNullOrWhiteSpace(input)
+                ? ""
+                : string.Concat(input.Where(char.IsDigit));
         }
     }
 }

@@ -1,90 +1,78 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Servidor.Data;
 using Servidor.Models;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 public class ServidorService
 {
     private readonly BancoContext _context;
+    private readonly string _caminhoSaida;
 
     public ServidorService(BancoContext context)
     {
         _context = context;
+        _caminhoSaida = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+
+        // Garante que a pasta exista
+        if (!Directory.Exists(_caminhoSaida))
+        {
+            Directory.CreateDirectory(_caminhoSaida);
+        }
     }
 
     public async Task GerarEncontradoAsync()
     {
-        // Carregar os dados das tabelas
         var contracheques = await _context.Contracheque.AsNoTracking().ToListAsync();
         var administrativos = await _context.Administrativo.AsNoTracking().ToListAsync();
 
-        // Normalizar os dados
-        var administrativosNormalizados = administrativos
-            .Select(a => a.Acoluna1?.TrimStart('0').Trim())
-            .ToList();
+        var contagemContracheque = contracheques
+            .GroupBy(c => c.Ccoluna2?.TrimStart('0').Trim())
+            .ToDictionary(g => g.Key, g => g.Count());
 
-        var cColuna2List = contracheques
-            .Select(c => c.Ccoluna2?.TrimStart('0').Trim())
-            .ToList();
+        var contagemAdministrativo = administrativos
+            .GroupBy(a => a.Acoluna1?.TrimStart('0').Trim())
+            .ToDictionary(g => g.Key, g => g.Count());
 
         var discrepancias = new List<ContrachequeModel>();
 
-        // Identificar valores duplicados em Ccoluna2
-        var duplicatasCcoluna2 = cColuna2List
-            .GroupBy(c => c)
-            .Select(g => new { Valor = g.Key, QuantidadeC = g.Count() })
-            .ToList();
+        // Agrupar discrepâncias por CPF
+        var contrachequesAgrupados = contracheques
+            .GroupBy(c => c.Ccoluna2?.TrimStart('0').Trim());
 
-        foreach (var duplicata in duplicatasCcoluna2)
+        foreach (var grupo in contrachequesAgrupados)
         {
-            // Contar as ocorrências em Administrativo
-            int ocorrenciasEmAdministrativo = administrativos
-                .Count(a => a.Acoluna1 != null && a.Acoluna1.TrimStart('0').Trim() == duplicata.Valor);
+            var cpf = grupo.Key;
+            if (string.IsNullOrEmpty(cpf)) continue;
 
-            // Se a quantidade em Contracheque for maior que em Administrativo
-            if (duplicata.QuantidadeC > ocorrenciasEmAdministrativo)
+            var qtdContracheque = grupo.Count();
+            var qtdAdministrativo = contagemAdministrativo.ContainsKey(cpf) ? contagemAdministrativo[cpf] : 0;
+            var diferenca = qtdContracheque - qtdAdministrativo;
+
+            if (diferenca <= 0) continue;
+
+            var linhasParaAdicionar = grupo.Take(diferenca).ToList();
+
+            foreach (var linha in linhasParaAdicionar)
             {
-                // Selecionar as linhas de Contracheque correspondentes a essa duplicata
-                var linhasDuplicadas = contracheques
-                    .Where(c => c.Ccoluna2 != null && c.Ccoluna2.TrimStart('0').Trim() == duplicata.Valor)
-                    .ToList();
-
-                // Filtrar as linhas que ainda não têm correspondência em Administrativo
-                var linhasExtras = linhasDuplicadas
-                    .Where(c => !administrativos.Any(a =>
-                        a.Acoluna1 != null && a.Acoluna1.TrimStart('0').Trim() == (c.Ccoluna2 != null ? c.Ccoluna2.TrimStart('0').Trim() : null) &&
-                        a.Acoluna2 != null && a.Acoluna2.TrimStart('0').Trim() == (c.Ccoluna3 != null ? c.Ccoluna3.TrimStart('0').Trim() : null)))
-                    .ToList();
-
-                foreach (var linha in linhasExtras)
+                var novaLinha = new AdministrativoModel
                 {
-                    Console.WriteLine($"Discrepância encontrada: {linha.Ccoluna2};{linha.Ccoluna3}");
-                    discrepancias.Add(linha);
+                    Acoluna1 = linha.Ccoluna2,
+                    Acoluna2 = linha.Ccoluna3,
+                    Acoluna3 = linha.Ccoluna4,
+                    Acoluna4 = linha.Ccoluna21,
+                    Acoluna5 = linha.Ccoluna16,
+                    Acoluna6 = linha.Ccoluna18
+                };
 
-                    // Verificar se já existe no banco antes de adicionar
-                    bool exists = _context.Administrativo.Any(a =>
-                        a.Acoluna1 != null && a.Acoluna1.TrimStart('0').Trim() == (linha.Ccoluna2 != null ? linha.Ccoluna2.TrimStart('0').Trim() : null) &&
-                        a.Acoluna2 != null && a.Acoluna2.TrimStart('0').Trim() == (linha.Ccoluna3 != null ? linha.Ccoluna3.TrimStart('0').Trim() : null));
-
-                    if (!exists)
-                    {
-                        var novaLinha = new AdministrativoModel
-                        {
-                            Acoluna1 = linha.Ccoluna2,
-                            Acoluna2 = linha.Ccoluna3,
-                            Acoluna3 = linha.Ccoluna4,
-                            Acoluna4 = linha.Ccoluna21,
-                            Acoluna5 = linha.Ccoluna16,
-                            Acoluna6 = linha.Ccoluna18
-                        };
-
-                        Console.WriteLine($"Adicionando ao banco: {novaLinha.Acoluna1}, {novaLinha.Acoluna2}, {novaLinha.Acoluna3}");
-                        _context.Administrativo.Add(novaLinha);
-                    }
-                }
+                _context.Administrativo.Add(novaLinha);
+                discrepancias.Add(linha); // só adiciona a linha que será salva
             }
         }
 
-        // Salvar as discrepâncias no banco de dados
         if (discrepancias.Any())
         {
             try
@@ -94,7 +82,7 @@ public class ServidorService
             }
             catch (DbUpdateException dbEx)
             {
-                Console.WriteLine($"Erro ao salvar no banco de dados: {dbEx.Message}");
+                Console.WriteLine($"Erro ao salvar no banco: {dbEx.Message}");
                 Console.WriteLine($"Detalhes: {dbEx.InnerException?.Message}");
             }
             catch (Exception ex)
@@ -102,10 +90,8 @@ public class ServidorService
                 Console.WriteLine($"Erro inesperado: {ex.Message}");
             }
 
-            // Gerar o arquivo SERVIDOR.txt
-            var desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-            var filePath = Path.Combine(desktopPath, "SERVIDOR.txt");
-
+            // Gerar arquivo apenas com as linhas adicionadas
+            var filePath = Path.Combine(_caminhoSaida, "SERVIDOR.txt");
             await using (var writer = new StreamWriter(filePath))
             {
                 foreach (var linha in discrepancias)
@@ -114,13 +100,14 @@ public class ServidorService
                 }
             }
 
-            Console.WriteLine($"Arquivo salvo em: {filePath}");
+            Console.WriteLine($"Arquivo SERVIDOR.txt gerado com {discrepancias.Count} linhas em: {filePath}");
         }
         else
         {
             Console.WriteLine("Nenhuma discrepância encontrada. Arquivo não gerado.");
         }
     }
+
 
     private string FormatarLinha(ContrachequeModel c)
     {
@@ -151,7 +138,6 @@ public class ServidorService
             c.Ccoluna23 ?? "",
             c.Ccoluna24 ?? "",
             c.Ccoluna25 ?? ""
-         
         });
     }
 }

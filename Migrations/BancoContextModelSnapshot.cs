@@ -66,6 +66,10 @@ namespace Servidor.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Cargo")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<string>("Ccoluna1")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -169,6 +173,31 @@ namespace Servidor.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Contracheque", (string)null);
+                });
+
+            modelBuilder.Entity("Servidor.Models.SelectOptionModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ValorColuna10")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ValorColuna9")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SelectOptions", (string)null);
                 });
 #pragma warning restore 612, 618
         }

@@ -1,327 +1,477 @@
 ﻿using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using NPOI.HSSF.UserModel;
+using NPOI.SS.Formula.Functions;
 using Servidor.Data;
 using Servidor.ErrosService;
 using Servidor.Models;
-using Servidor.Models.Enums;
 
 namespace Servidor.Controllers
 {
     public class ConvenioController : Controller
     {
         private readonly BancoContext _context;
-        private readonly MatriculaService _matriculaservice;
-        private readonly SecretariaService _secretariaservice;
         private readonly ServidorService _servidorService;
         private readonly CategoriaService _categoriaService;
-        private readonly GeradorDePerfil _geradorDePerfil;
+        private readonly MatriculaService _matriculaService;
+        private readonly SecretariaService _secretariaService;
         private readonly PerfilCalculo _perfilCalculo;
-        private readonly CleanupService _cleanupService;        
+        private readonly CleanupService _cleanupService;
 
-        private readonly AbareService _abareservice;
-        private readonly CupiraService _cupiraservice;
-        private readonly CansancaoService _cansancaoservice;
-        private readonly XiqueXiqueService _xiquexiqueservice;
-        private readonly AlcinopolisService _alcinopolisService;
-        private readonly CafarnaumService _cafarnaumService;
-        private readonly IndiaporaService _IndiaporaService;
-        private readonly AnadiaService _anadiaService;
-        private readonly GiraDoPoncianoService _giraDoPoncianoService;
-        private readonly FUNBodocoService _fUNBodocoService;
-        private readonly BodocoService _bodocoService;
-        private readonly CatuService _catuService;
-        private readonly RemansoService _remansoService;
-        private readonly FMSCupiraService _fMSCupiraService;
-        private readonly SantaMariaVitoriaService _santaMariaVitoriaService;
-        private readonly FAPENSaoJoseLajeService _fAPENSaoJoseLajeService;
-        private readonly BeloMonteService _beloMonteService;
-        private readonly CabaceiraParaguacuService _cabaceiraParaguacuService;
-        private readonly MirandaService _mirandaService;
-        private readonly FundoMoncaoService _fundoMoncaoService;
-        private readonly CambiraService _cambiraService;
-        private readonly VicosaService _vicosaService;
-        private readonly CanaranaService _canaranaService;
-        private readonly LamaraoService _lamaraoService;
-
-        public ConvenioController(BancoContext context, AbareService abareservice, 
-                                  CupiraService cupiraservice, CansancaoService cansancaoservice,
-                                  MatriculaService matriculaservice, SecretariaService secretariaservice,
-                                  ServidorService servidorService, CategoriaService categoriaService,
-                                  CleanupService cleanupService, XiqueXiqueService xiqueXiqueService,
-                                  AlcinopolisService alcinopolisService, CafarnaumService cafarnaumService,
-                                  IndiaporaService indiaporaService, GeradorDePerfil geradorDePerfil,
-                                  AnadiaService anadiaService, PerfilCalculo perfilCalculo,
-                                  GiraDoPoncianoService giraDoPoncianoService, FUNBodocoService fUNBodocoService, 
-                                  BodocoService bodocoService, CatuService catuService,
-                                  RemansoService remansoService, FMSCupiraService fMSCupiraService,
-                                  SantaMariaVitoriaService santaMariaVitoriaService, FAPENSaoJoseLajeService fAPENSaoJoseLajeService,
-                                  BeloMonteService beloMonteService, CabaceiraParaguacuService cabaceiraParaguacuService,
-                                  MirandaService mirandaService, FundoMoncaoService fundoMoncaoService,
-                                  CambiraService cambiraService, VicosaService vicosaService,
-                                  CanaranaService canaranaService, LamaraoService lamaraoService)
+        public ConvenioController(BancoContext context, ServidorService servidorService, CategoriaService categoriaService,
+                                  MatriculaService matriculaService, SecretariaService secretariaService, PerfilCalculo perfilCalculo,
+                                  CleanupService cleanupService)
         {
             _context = context;
             _servidorService = servidorService;
-            _matriculaservice = matriculaservice;
             _categoriaService = categoriaService;
-            _secretariaservice = secretariaservice;
-            _geradorDePerfil = geradorDePerfil;
+            _matriculaService = matriculaService;
+            _secretariaService = secretariaService;
             _perfilCalculo = perfilCalculo;
             _cleanupService = cleanupService;
-            _xiquexiqueservice = xiqueXiqueService;
-            _alcinopolisService = alcinopolisService;
-            _cafarnaumService = cafarnaumService;
-            _IndiaporaService = indiaporaService;
-            _abareservice = abareservice;
-            _cansancaoservice = cansancaoservice;
-            _cupiraservice = cupiraservice;
-            _anadiaService = anadiaService;
-            _giraDoPoncianoService = giraDoPoncianoService;
-            _fUNBodocoService = fUNBodocoService;
-            _bodocoService = bodocoService;
-            _catuService = catuService;
-            _remansoService = remansoService;
-            _fMSCupiraService = fMSCupiraService;
-            _santaMariaVitoriaService = santaMariaVitoriaService;
-            _fAPENSaoJoseLajeService = fAPENSaoJoseLajeService;
-            _beloMonteService = beloMonteService;
-            _cabaceiraParaguacuService = cabaceiraParaguacuService;
-            _mirandaService = mirandaService;
-            _fundoMoncaoService = fundoMoncaoService;
-            _cambiraService = cambiraService;
-            _vicosaService = vicosaService;
-            _canaranaService = canaranaService;
-            _lamaraoService = lamaraoService;
         }
 
         public IActionResult Index()
         {
-            // Cria uma lista de SelectListItem a partir do enum Status
-            var statuses = Enum.GetValues(typeof(Status))
-                .Cast<Status>()
-                .Select(s => new SelectListItem
+            var options = _context.SelectOptions
+                .Select(x => new SelectOptionModel
                 {
-                    Value = ((int)s).ToString(),  // O valor que será enviado no form
-                    Text = GetMunicipioDisplayName(s)  // O nome que será exibido na lista
+                    Id = x.Id,
+                    Nome = x.Nome
                 })
                 .ToList();
 
-            // Passa a lista para a view
+            var statuses = options.Select(option => new SelectListItem
+            {
+                Value = option.Id.ToString(),
+                Text = option.Nome
+            }).ToList();
+
             ViewBag.Statuses = statuses;
+
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> ProcessarArquivo(IFormFile arquivoTxt, IFormFile arquivoExcel, EnumModel status)
+        public async Task<IActionResult> ProcessarArquivo(IFormFile arquivoTxt, IFormFile arquivoExcel, int SelectOptionId)
         {
-            if (arquivoTxt == null || arquivoTxt.Length == 0 && arquivoExcel == null || arquivoExcel.Length == 0)
+            if (arquivoTxt == null || arquivoTxt.Length == 0 || arquivoExcel == null || arquivoExcel.Length == 0)
             {
-                TempData["Mensagem"] = "Erro nos arquivos enviado.";
-                return RedirectToAction("Index");
+                return Json(new { success = false, message = "Erro nos arquivos enviados. Por favor, envie arquivos válidos." });
             }
 
-            var registros = new List<ContrachequeModel>();
-            var registros2 = new List<AdministrativoModel>();
-
-            try
+            if (SelectOptionId == 0)
             {
-                var serviceMap = new Dictionary<Status, Func<string[], Task<List<ContrachequeModel>>>>
-{
-                    { Status.PREF_Abare_BA, colunas => _abareservice.ProcessarArquivoAsync(colunas, Status.PREF_Abare_BA) },
-                    { Status.PREF_Cupira_PE, colunas => _cupiraservice.ProcessarArquivoAsync(colunas, Status.PREF_Cupira_PE) },
-                    { Status.PREF_Cansanção_BA, colunas => _cansancaoservice.ProcessarArquivoAsync(colunas, Status.PREF_Cansanção_BA) },
-                    { Status.PREF_XiqueXique_BA, colunas => _xiquexiqueservice.ProcessarArquivoAsync(colunas, Status.PREF_XiqueXique_BA) },
-                    { Status.PREF_Alcinópolis_MS, colunas => _alcinopolisService.ProcessarArquivoAsync(colunas, Status.PREF_Alcinópolis_MS) },
-                    { Status.PREF_Cafarnaum_BA, colunas => _cafarnaumService.ProcessarArquivoAsync(colunas, Status.PREF_Cafarnaum_BA) },
-                    { Status.PREF_Indiaporã_SP, colunas => _IndiaporaService.ProcessarArquivoAsync(colunas, Status.PREF_Indiaporã_SP) },
-                    { Status.PREF_Anadia_AL, colunas => _anadiaService.ProcessarArquivoAsync(colunas, Status.PREF_Anadia_AL) },
-                    { Status.PREF_GirauDoPonciano, colunas => _giraDoPoncianoService.ProcessarArquivoAsync(colunas, Status.PREF_GirauDoPonciano) },
-                    { Status.FUNPREBO_Bodoco_PE, colunas => _fUNBodocoService.ProcessarArquivoAsync(colunas, Status.FUNPREBO_Bodoco_PE) },
-                    { Status.PREF_Bodoco_PE, colunas => _bodocoService.ProcessarArquivoAsync(colunas, Status.PREF_Bodoco_PE) },
-                    { Status.PREF_Catu_BA, colunas => _catuService.ProcessarArquivoAsync(colunas, Status.PREF_Catu_BA) },
-                    { Status.PREF_Remanso_BA, colunas => _remansoService.ProcessarArquivoAsync(colunas, Status.PREF_Remanso_BA) },
-                    { Status.FMS_Cupira_PE, colunas => _fMSCupiraService.ProcessarArquivoAsync(colunas, Status.FMS_Cupira_PE) },
-                    { Status.PREF_SantaMariaDaVitoria_BA, colunas => _santaMariaVitoriaService.ProcessarArquivoAsync(colunas, Status.PREF_SantaMariaDaVitoria_BA) },
-                    { Status.FAPEN_SaoJoseDaSaje_AL, colunas => _fAPENSaoJoseLajeService.ProcessarArquivoAsync(colunas, Status.FAPEN_SaoJoseDaSaje_AL) },
-                    { Status.PREF_BeloMonte_AL, colunas => _beloMonteService.ProcessarArquivoAsync(colunas, Status.PREF_BeloMonte_AL) },
-                    { Status.PREF_CabaceiraDoParaguacu_BA, colunas => _cabaceiraParaguacuService.ProcessarArquivoAsync(colunas, Status.PREF_CabaceiraDoParaguacu_BA) },
-                    { Status.PREF_Miranda_MS, colunas => _mirandaService.ProcessarArquivoAsync(colunas, Status.PREF_Miranda_MS) },
-                    { Status.FUNDO_Moncao_MA, colunas => _fundoMoncaoService.ProcessarArquivoAsync(colunas, Status.FUNDO_Moncao_MA) },
-                    { Status.PREF_Cambira_PR, colunas => _cambiraService.ProcessarArquivoAsync(colunas, Status.PREF_Cambira_PR) },
-                    { Status.PREF_Vicosa_AL, colunas => _vicosaService.ProcessarArquivoAsync(colunas, Status.PREF_Vicosa_AL) },
-                    { Status.PREF_Canarana_BA, colunas => _canaranaService.ProcessarArquivoAsync(colunas, Status.PREF_Canarana_BA) },
-                    { Status.PREF_Lamarao_BA, colunas => _lamaraoService.ProcessarArquivoAsync(colunas, Status.PREF_Lamarao_BA) },
-};
+                return Json(new { success = false, message = "Selecione um município válido." });
+            }
 
-                if (serviceMap.TryGetValue(status.StatusSelecionado, out var processarArquivo))
+            var selectOptionFromDb = await _context.SelectOptions
+                .FirstOrDefaultAsync(x => x.Id == SelectOptionId);
+
+            if (selectOptionFromDb == null)
+            {
+                return Json(new { success = false, message = "Município não encontrado no banco de dados." });
+            }
+
+            // Processar os arquivos
+            var contracheque = await ProcessarArquivoTxt(arquivoTxt, selectOptionFromDb);
+            var administrativo = await ProcessarArquivoExcel(arquivoExcel);
+
+            // Salvar os dados no banco
+            if (contracheque.Any()) _context.Contracheque.AddRange(contracheque);
+            if (administrativo.Any()) _context.Administrativo.AddRange(administrativo);
+            await _context.SaveChangesAsync();
+
+            // Retornar sucesso para o frontend
+            return Json(new { success = true });
+        }
+
+        //   ============  Coluna 1 ==================
+
+        [HttpGet]
+        public async Task<IActionResult> ObterValoresCcoluna1()
+        {
+            var valores = await _context.Contracheque
+                .Select(x => x.Ccoluna1)
+                .Distinct()
+                .ToListAsync();
+
+            return Json(valores);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ObterValoresCargo()
+        {
+            var valores1 = await _context.Contracheque
+                .Select(x => x.Cargo)
+                .Distinct()
+                .ToListAsync();
+
+            return Json(valores1);
+        }
+
+        // ============ Atualização de Ccoluna21 ==================
+        [HttpPost]
+        public async Task<IActionResult> AtualizarValoresCcoluna21([FromBody] Dictionary<string, string> valoresAtualizados)
+        {
+            if (valoresAtualizados == null || !valoresAtualizados.Any())
+            {
+                return Json(new { success = false, message = "Nenhum valor foi enviado para atualização." });
+            }
+
+            var chaves = valoresAtualizados.Keys.ToList();
+
+            var registros = await _context.Contracheque
+                .Where(x => chaves.Contains(x.Ccoluna1) || chaves.Contains(x.Cargo))
+                .ToListAsync();
+
+            foreach (var registro in registros)
+            {
+                if (valoresAtualizados.TryGetValue(registro.Ccoluna1, out var novoValor) ||
+                    valoresAtualizados.TryGetValue(registro.Cargo, out novoValor))
                 {
-                    using var reader = new StreamReader(arquivoTxt.OpenReadStream(), Encoding.UTF8);
-                    while (!reader.EndOfStream)
+                    registro.Ccoluna21 = novoValor;
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            return Json(new { success = true, message = "Valores de Ccoluna21 atualizados com sucesso!" });
+        }
+
+        //   ============  Coluna 16 ==================
+
+        [HttpGet]
+        public async Task<IActionResult> ObterValoresDistintosCcoluna16()
+        {
+            var valoresDistintos = await _context.Contracheque
+                .Select(x => x.Ccoluna16)
+                .Distinct()
+                .ToListAsync();
+
+            return Json(valoresDistintos);
+        }
+
+        // ============ Atualização de Ccoluna16 ==================
+        [HttpPost]
+        public async Task<IActionResult> AtualizarValoresCcoluna16([FromBody] Dictionary<string, string> valoresAtualizados)
+        {
+            if (valoresAtualizados == null || !valoresAtualizados.Any())
+            {
+                return Json(new { success = false, message = "Nenhum valor foi enviado para atualização." });
+            }
+
+            var chaves = valoresAtualizados.Keys.ToList();
+
+            var registros = await _context.Contracheque
+                .Where(x => chaves.Contains(x.Ccoluna16))
+                .ToListAsync();
+
+            foreach (var registro in registros)
+            {
+                if (valoresAtualizados.TryGetValue(registro.Ccoluna16, out var novoValor))
+                {
+                    registro.Ccoluna16 = novoValor;
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            return Json(new { success = true, message = "Valores de Ccoluna16 atualizados com sucesso!" });
+        }
+
+        //   ============  Calculo ==================
+
+        [HttpGet]
+        public async Task<IActionResult> ObterValoresCalculo()
+        {
+            var categorias = new Dictionary<string, string>
+    {
+        { "1", "PENSIONISTA" }, { "2", "EFETIVO" }, { "3", "MILITAR" }, { "4", "APOSENTADO" },
+        { "5", "CONTRATADO" }, { "6", "PRESTADOR DE SERVIÇO" }, { "7", "COMISSIONADO" },
+        { "8", "ESTAGIARIO" }, { "9", "CELETISTA" }, { "10", "ESTATUTARIO" }, { "11", "TEMPORARIO" },
+        { "12", "BENEFICÍARIO" }, { "13", "AGENTE POLITICO" }, { "14", "AGUARDANDO ESPECIFICAR" },
+        { "15", "EFETIVO/COMISSÃO" }, { "16", "ESTÁVEL" }, { "17", "CONSELHEIRO TUTELAR" },
+        { "18", "REGIME ADMINISTRATIVO" }, { "19", "TRABALHADOR AVULSO" }, { "20", "PENSÃO POR MORTE" },
+        { "21", "INTERESSE PÚBLICO" }, { "22", "EMPREGO PÚBLICO" }, { "23", "REINTEGRAÇÃO" },
+        { "24", "REGIME JURÍDICO" }, { "25", "CONTRATADO/COMISSIONADO" }, { "26", "SEM CATEGORIA" },
+        { "27", "PENSÃO ALIMENTÍCIA" }, { "28", "INATIVO" }, { "29", "FUNÇÃO PÚBLICA RELEVANTE" },
+        { "30", "PENSÃO ESPECIAL" }, { "31", "Efetivo/Cedido" }, { "32", "Avulsos" }, { "33", "CEDIDO" },
+        { "34", "Autônomo" }, { "35", "Comissionado/Estatutário" }, { "36", "Temporário/Estatutário" },
+        { "37", "Concursado" }, { "38", "Contribuinte Individual" }, { "39", "Eletivo" },
+        { "41", "Estatutário/Agente Político" }, { "42", "Auxílio" }, { "48", "Bolsa Auxílio" },
+        { "49", "Temporário - CLT" }, { "51", "Prefeito" }, { "52", "TUTELAR" }
+    };
+
+            var valoresCcoluna16 = await _context.Contracheque
+                .Select(x => x.Ccoluna16)
+                .Distinct()
+                .ToListAsync();
+
+            var valoresFormatados = valoresCcoluna16
+                .Select(valor => $"{valor} - {categorias.GetValueOrDefault(valor, "DESCONHECIDO")}")
+                .ToList();
+
+            return Json(valoresFormatados);
+        }
+
+
+        // ============ Atualização de Ccoluna18 ==================
+        [HttpPost]
+        public async Task<IActionResult> AtualizarValoresCcoluna18([FromBody] Dictionary<string, object> valoresAtualizados, SelectOptionModel selectOption)
+        {
+            if (valoresAtualizados == null || !valoresAtualizados.Any())
+                return BadRequest(new { message = "Nenhum valor foi enviado para atualização." });
+
+            int totalAlterados = 0;
+
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    foreach (var item in valoresAtualizados)
                     {
-                        var linha = await reader.ReadLineAsync();
-                        if (string.IsNullOrWhiteSpace(linha) || !linha.StartsWith("F", StringComparison.OrdinalIgnoreCase))
-                            continue;
+                        var valorOriginal = item.Key.Trim().ToUpper();
+                        var novoValor = item.Value.ToString().Trim();
 
-                        var colunas = linha.Split(';').Select(c => c.Trim()).ToArray();
-                        var contracheques = await processarArquivo(colunas);
-                        registros.AddRange(contracheques);
+                        // Extrai apenas o número antes do " - " para comparar com Ccoluna16
+                        var numeroOriginal = valorOriginal.Split(" - ")[0];
+
+                        // Atualiza diretamente no banco para melhor performance
+                        int alterados = await _context.Contracheque
+                            .Where(x => x.Ccoluna16 == numeroOriginal)
+                            .ExecuteUpdateAsync(setters => setters.SetProperty(x => x.Ccoluna18, novoValor));
+
+                        totalAlterados += alterados;
                     }
-                }
 
-                if (registros.Any())
-                {
-                    _context.Contracheque.AddRange(registros);
-                    await _context.SaveChangesAsync();
-                    TempData["Mensagem"] = $"{registros.Count} registros salvos com sucesso!";
+                    await transaction.CommitAsync();
                 }
-                else
+                catch (Exception ex)
                 {
-                    TempData["Mensagem"] = "Nenhum dado válido encontrado no arquivo TXT.";
+                    await transaction.RollbackAsync();
+                    return StatusCode(500, new { message = "Erro ao atualizar os registros.", error = ex.Message });
                 }
             }
-            catch (Exception ex)
-            {
-                TempData["Mensagem"] = $"Erro ao processar o arquivo TXT: {ex.Message}";
-            }
-//=====================================================================================================\\
-            try
-            {
-                using (var stream = arquivoExcel.OpenReadStream())
-                {
-                    var workbook = new HSSFWorkbook(stream); // Para arquivos .xls
-                    var sheet = workbook.GetSheetAt(0); // Pega a primeira aba
 
-                    for (int rowIdx = 1; rowIdx <= sheet.LastRowNum; rowIdx++) // Começa da linha 1 para ignorar cabeçalho
-                    {
-                        var row = sheet.GetRow(rowIdx);
-                        if (row == null) continue; // Ignora linhas vazias
-
-                        var administrativo = new AdministrativoModel
-                        {
-                            Acoluna1 = row.GetCell(2)?.ToString() ?? "",
-
-                            // Lê apenas os 10 últimos dígitos ou preenche com zeros se for menor
-                            Acoluna2 = row.GetCell(3)?.ToString().Length >= 10
-                            ? row.GetCell(3).ToString().Substring(row.GetCell(3).ToString().Length - 10)
-                            : row.GetCell(3)?.ToString().PadLeft(10, '0') ?? "0000000000",
-
-                            Acoluna3 = row.GetCell(4)?.ToString() ?? "", // Coluna 5
-                            Acoluna4 = row.GetCell(12)?.ToString() ?? "", // Coluna 13
-                            Acoluna5 = row.GetCell(13)?.ToString() ?? "", // Coluna 14
-                            Acoluna6 = row.GetCell(14)?.ToString() ?? "", // Coluna 15
-                            
-                        };
-
-                         //Mapeamento de valores para Acoluna5
-                        var Vinculo = new Dictionary<string, string>
-                        {
-                            { "Contratado", "5" },
-                            { "Comissionado", "7" },
-                            { "Agente politico", "13" },
-                            { "Efetivo", "2" },
-                            { "Inativo", "14" },
-                            { "Pensionista", "1" },
-                            { "Cedido", "33" },
-                            { "Eletivo", "13" },
-                            { "Temporário", "11"},
-                            { "Aguardando Especificar", "14" },
-                            { "Conselheiro Tutelar", "17"},
-                            { "Estatutário", "10"},
-                            { "Militar", "14"},
-                            { "Celetista", "9"},
-                            { "Efetivo/Cedido", "15"},
-                            { "Função Pública Relevante", "29"},
-                            { "Estagiario", "8"},
-                            { "Aposentado", "4"},
-                            { "Regime Administrativo", "18"},
-                            { "Efetivo/comissão", "15" },
-                            { "Prestador de serviço", "6" },
-                            { "ESTAVEIS", "16" },
-                            { "CONTRATADO", "5" },
-                            { "CONCURSADOS", "2" },
-                            { "COMISSIONADOS", "7" },
-                            { "Concursado", "2" },
-                            { "Estável", "16" },
-                            { "Temporário/Estatutário", "11" },
-                            { "Comissionado/Estatutário", "15" },
-                        };                      
-
-                         //Atualiza Acoluna5 com base no mapeamento
-                        if (Vinculo.ContainsKey(administrativo.Acoluna5))
-                        {
-                            administrativo.Acoluna5 = Vinculo[administrativo.Acoluna5];
-                        }
-                        registros2.Add(administrativo);
-                    }
-                }
-
-                if (registros2.Any())
-                {
-                    _context.Administrativo.AddRange(registros2);
-                    await _context.SaveChangesAsync();
-                    TempData["Mensagem"] = $"{registros2.Count} registros salvos com sucesso!";
-                }
-                else
-                {
-                    TempData["Mensagem"] = "Nenhum dado válido encontrado no arquivo Excel.";
-                }
-            }
-            catch (Exception ex)
-            {
-                TempData["Mensagem"] = $"Erro ao processar o arquivo Excel: {ex.Message}";
-            }
+            if (totalAlterados == 0)
+                return BadRequest(new { message = "Nenhum registro foi atualizado." });
 
             await _servidorService.GerarEncontradoAsync();
-
-            await _matriculaservice.GerarMatriculasAsync();
-
+            await _matriculaService.GerarMatriculasAsync();
             await _categoriaService.GerarVinculoAsync();
+            await _secretariaService.GerarSecretariasAsync();
+            await _perfilCalculo.GeradorPerfilCalculo();
+            await _cleanupService.LimparTabelasAsync();
 
-            await _secretariaservice.GerarSecretariasAsync(status.StatusSelecionado);
-
-            await _geradorDePerfil.GerarPerfilAcessoAsync(status.StatusSelecionado);  //Perfil de Acesso (Limitado)
-
-            await _perfilCalculo.GeradorPerfilCalculo(status.StatusSelecionado);
-
-            //await _cleanupService.LimparTabelasAsync();
-
-            return RedirectToAction("Index");
+            return Ok(new { success = true, message = $"{totalAlterados} valores atualizados com sucesso." });
         }
 
-        private string GetMunicipioDisplayName(Status status)
+        [HttpGet]
+        public JsonResult ObterQuantidadeDiscrepancias()
         {
-            switch (status)
+            try
             {
-                case Status.PREF_Abare_BA: return "Município de Abaré/BA";
-                case Status.PREF_Cupira_PE: return "Município de Cupira/PE";
-                case Status.PREF_Cansanção_BA: return "Município de Cansanção/BA";
-                case Status.PREF_XiqueXique_BA: return "Município de XiqueXique/BA";
-                case Status.PREF_Alcinópolis_MS: return "Município de Alcinópolis/BA";
-                case Status.PREF_Cafarnaum_BA: return "Município de Cafarnaum/BA";
-                case Status.PREF_Anadia_AL: return "Município de Anadia/AL";
-                case Status.PREF_Indiaporã_SP: return "Município de Indiaporã/SP";
-                case Status.PREF_GirauDoPonciano: return "Município de Girau do Ponciano/AL";
-                case Status.FUNPREBO_Bodoco_PE: return "FUNPREBO - Bodocó/PE";
-                case Status.PREF_Bodoco_PE: return "Município de Bodocó/PE";
-                case Status.PREF_Catu_BA: return "Município de Catu/BA";
-                case Status.PREF_Remanso_BA: return "Município de Remanso/BA";
-                case Status.FMS_Cupira_PE: return "Fundo Municipal de Saúde de Cupira/PE";
-                case Status.PREF_SantaMariaDaVitoria_BA: return "Município de Santa Maria da Vitória/BA";
-                case Status.FAPEN_SaoJoseDaSaje_AL: return "FAPEN - São José da Laje/AL";
-                case Status.PREF_BeloMonte_AL: return "Município de Belo Monte/AL";
-                case Status.PREF_CabaceiraDoParaguacu_BA: return "Município de Cabaceiras do Paraguaçu/BA";
-                case Status.PREF_Miranda_MS: return "Município de Miranda/MS";
-                case Status.FUNDO_Moncao_MA: return "Fundo Municipal de Saúde de Monção/MA";
-                case Status.PREF_Cambira_PR: return "Município de Cambira/PR";
-                case Status.PREF_Vicosa_AL: return "Município de Viçosa/AL";
-                case Status.PREF_Canarana_BA: return "Município de Canarana/BA";
-                case Status.PREF_Lamarao_BA: return "Município de Lamarão/BA";
-                default: return "Selecione o Município";
+                var desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+
+                var servidorPath = Path.Combine(desktopPath, "SERVIDOR.txt");
+                var matriculaPath = Path.Combine(desktopPath, "MATRICULA.txt");
+                var categoriaPath = Path.Combine(desktopPath, "CATEGORIA.txt");
+                var secretariaPath = Path.Combine(desktopPath, "SECRETARIAS.txt");
+                var perfilCalculoPath = Path.Combine(desktopPath, "PERFIL DE CALCULO.txt");
+
+                int servidor = System.IO.File.Exists(servidorPath) ? System.IO.File.ReadAllLines(servidorPath).Length : 0;
+                int matricula = System.IO.File.Exists(matriculaPath) ? System.IO.File.ReadAllLines(matriculaPath).Length : 0;
+                int categoria = System.IO.File.Exists(categoriaPath) ? System.IO.File.ReadAllLines(categoriaPath).Length : 0;
+                int secretaria = System.IO.File.Exists(secretariaPath) ? System.IO.File.ReadAllLines(secretariaPath).Length : 0;
+                int perfilCalculo = System.IO.File.Exists(perfilCalculoPath) ? System.IO.File.ReadAllLines(perfilCalculoPath).Length : 0;
+
+                return Json(new
+                {
+                    servidor,
+                    matricula,
+                    categoria,
+                    secretaria,
+                    perfilCalculo
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
             }
         }
+     
+        //<<<<<<<   =================================   PRIVATES ===================================== >>>>>>>>>>>>>>>>>
+        private async Task<List<ContrachequeModel>> ProcessarArquivoTxt(IFormFile arquivoTxt, SelectOptionModel selectOptionFromDb)
+        {
+            var registros = new List<ContrachequeModel>();
+
+            using (var stream = arquivoTxt.OpenReadStream())
+            using (var reader = new StreamReader(stream, Encoding.UTF8))
+            {
+                string linha;
+
+                while ((linha = reader.ReadLine()) != null)
+                {
+                    if (linha.StartsWith("F"))
+                    {
+                        var colunas = linha.Split(';');
+                        linha = linha.Trim();
+
+                        if (colunas.Length >= 20)
+                        {
+                            var item = new ContrachequeModel
+                            {
+                                Ccoluna1 = colunas[7],
+                                Ccoluna2 = colunas[3],
+                                Ccoluna3 = colunas[4],
+                                Ccoluna4 = colunas[5],
+                                Ccoluna5 = "Rua A",
+                                Ccoluna6 = "S/N",
+                                Ccoluna7 = "CASA",
+                                Ccoluna8 = "CENTRO",
+                                Ccoluna9 = selectOptionFromDb.ValorColuna9,
+                                Ccoluna10 = selectOptionFromDb.ValorColuna10,
+                                Ccoluna11 = "99999999",
+                                Ccoluna12 = "99999999999",
+                                Ccoluna13 = "99999999999",
+                                Ccoluna14 = "99999999999",
+                                Ccoluna15 = colunas[9],
+                                Ccoluna16 = string.IsNullOrEmpty(colunas[16]) ? "14" : colunas[16],
+                                Ccoluna17 = "0",
+                                Ccoluna18 = colunas[18],
+                                Ccoluna19 = "0",
+                                Ccoluna20 = "Teste@gmail.com",
+                                Ccoluna21 = colunas[19],
+                                Ccoluna22 = "0",
+                                Ccoluna23 = colunas[10],
+                                Ccoluna24 = "0",
+                                Ccoluna25 = "0",
+                                Cargo = colunas[8]
+                            };
+
+                            registros.Add(item);
+                        }
+                    }
+                }
+            }
+
+            return registros;
+        }
+
+        private async Task<List<AdministrativoModel>> ProcessarArquivoExcel(IFormFile arquivoExcel)
+        {
+            var registros = new List<AdministrativoModel>();
+
+            var secretariaMap = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
+    {
+        {"MUNICÍPIO DE ALCINÓPOLIS/MS", 1},
+        {"FUNDO MUNICIPAL DE EDUCAÇÃO", 2},
+        {"PREFEITURA", 1},
+        {"EDUCAÇÃO", 2},
+        {"PREFEITURA MUNICIPAL DE ARACATU", 1},
+        {"NADA", 99},
+    };
+
+            var categoriaMap = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
+    {
+        {"PENSIONISTA", 1},
+        {"EFETIVO", 2},
+        {"MILITAR", 3},
+        {"APOSENTADO", 4},
+        {"CONTRATADO", 5},
+        {"PRESTADOR DE SERVIÇO", 6},
+        {"COMISSIONADO", 7},
+        {"ESTAGIARIO", 8},
+        {"CELETISTA", 9},
+        {"ESTATUTARIO", 10},
+        {"Estatutário", 10},
+        {"TEMPORARIO", 11},
+        {"BENEFICÍARIO", 12},
+        {"AGENTE POLITICO", 13},
+        {"Agente Político", 13},
+        {"AGUARDANDO ESPECIFICAR", 14},
+        {"EFETIVO/COMISSÃO", 15},
+        {"ESTÁVEL", 16},
+        {"CONSELHEIRO TUTELAR", 17},
+        {"REGIME ADMINISTRATIVO", 18},
+        {"TRABALHADOR AVULSO", 19},
+        {"PENSÃO POR MORTE", 20},
+        {"INTERESSE PÚBLICO", 21},
+        {"EMPREGO PÚBLICO", 22},
+        {"REINTEGRAÇÃO", 23},
+        {"REGIME JURÍDICO", 24},
+        {"CONTRATADO/COMISSIONADO", 25},
+        {"SEM CATEGORIA", 26},
+        {"PENSÃO ALIMENTÍCIA", 27},
+        {"INATIVO", 28},
+        {"FUNÇÃO PÚBLICA RELEVANTE", 29},
+        {"PENSÃO ESPECIAL", 30},
+        {"Efetivo/Cedido", 31},
+        {"Avulsos", 32},
+        {"CEDIDO", 33},
+        {"Autônomo", 34},
+        {"Comissionado/Estatutário", 35},
+        {"Temporário/Estatutário", 36},
+        {"Concursado", 37},
+        {"Contribuinte Individual", 38},
+        {"Eletivo", 39},
+        {"Estatutário/Agente Político", 41},
+        {"Auxílio", 42},
+        {"Bolsa Auxílio", 48},
+        {"Temporário - CLT", 49},
+        {"Prefeito", 51},
+        {"TUTELAR", 52},
+    };
+
+            using (var stream = arquivoExcel.OpenReadStream())
+            {
+                var workbook = new HSSFWorkbook(stream);
+                var sheet = workbook.GetSheetAt(0);
+
+                for (int rowIdx = 1; rowIdx <= sheet.LastRowNum; rowIdx++)
+                {
+                    var row = sheet.GetRow(rowIdx);
+                    if (row == null) continue;
+
+                    string valorSecretaria = row.GetCell(12)?.ToString().Trim() ?? "";
+                    string valorCategoria = row.GetCell(13)?.ToString().Trim() ?? "";
+
+                    var administrativo = new AdministrativoModel
+                    {
+                        Acoluna1 = row.GetCell(2)?.ToString() ?? "",
+                        Acoluna2 = row.GetCell(3)?.ToString().Length >= 10
+                                    ? row.GetCell(3).ToString().Substring(row.GetCell(3).ToString().Length - 10)
+                                    : row.GetCell(3)?.ToString().PadLeft(10, '0') ?? "0000000000",
+                        Acoluna3 = row.GetCell(4)?.ToString() ?? "",
+                        Acoluna4 = secretariaMap.TryGetValue(valorSecretaria, out var idSecretaria) ? idSecretaria.ToString() : valorCategoria,
+                        Acoluna5 = categoriaMap.TryGetValue(valorCategoria, out var idCategoria) ? idCategoria.ToString() : row.GetCell(13).ToString(),
+                        Acoluna6 = row.GetCell(14)?.ToString() ?? "",
+                    };
+                    registros.Add(administrativo);
+                }
+            }
+
+            return registros;
+        }
+
+        private int ContarLinhasArquivo(string caminhoArquivo)
+        {
+            try
+            {
+                if (System.IO.File.Exists(caminhoArquivo))
+                {
+                    return System.IO.File.ReadAllLines(caminhoArquivo).Length;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao contar linhas do arquivo: {ex.Message}");
+            }
+
+            return 0;
+        }
+
     }
-    
 
 }
