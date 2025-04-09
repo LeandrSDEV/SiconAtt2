@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "+nu0O+DPDRKXNZewTD+bx5CyWeNOvaPFFUGDj4Xen3o=",
+  "Hash": "eyuWVO4jpChAUTBB2hFo2ccCk5DA71X3HKMHq8r3SOA=",
   "Source": "Servidor",
   "BasePath": "_content/Servidor",
   "Mode": "Default",
@@ -115,8 +115,8 @@
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
-      "Fingerprint": "tpbf0r7vq5",
-      "Integrity": "75oUSpAAkcnnhk6M7BXFJ3bQE7XDNZMOFMZc0QDv3/E=",
+      "Fingerprint": "drnhubn7uj",
+      "Integrity": "iax6nsWlwGMWv2HTTbjgPagMDYXs3HGAJDKNxtnCBLI=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\js\\site.js"
@@ -1485,6 +1485,51 @@
       ]
     },
     {
+      "Route": "js/site.drnhubn7uj.js",
+      "AssetFile": "C:\\Users\\LEANDRO\\Desktop\\SiconATT-main1\\wwwroot\\js\\site.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "19624"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"iax6nsWlwGMWv2HTTbjgPagMDYXs3HGAJDKNxtnCBLI=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 09 Apr 2025 10:20:44 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "drnhubn7uj"
+        },
+        {
+          "Name": "label",
+          "Value": "js/site.js"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-iax6nsWlwGMWv2HTTbjgPagMDYXs3HGAJDKNxtnCBLI="
+        }
+      ]
+    },
+    {
       "Route": "js/site.js",
       "AssetFile": "C:\\Users\\LEANDRO\\Desktop\\SiconATT-main1\\wwwroot\\js\\site.js",
       "Selectors": [],
@@ -1495,7 +1540,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "14031"
+          "Value": "19624"
         },
         {
           "Name": "Content-Type",
@@ -1503,11 +1548,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"75oUSpAAkcnnhk6M7BXFJ3bQE7XDNZMOFMZc0QDv3/E=\""
+          "Value": "\"iax6nsWlwGMWv2HTTbjgPagMDYXs3HGAJDKNxtnCBLI=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sun, 06 Apr 2025 17:12:22 GMT"
+          "Value": "Wed, 09 Apr 2025 10:20:44 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -1517,52 +1562,7 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-75oUSpAAkcnnhk6M7BXFJ3bQE7XDNZMOFMZc0QDv3/E="
-        }
-      ]
-    },
-    {
-      "Route": "js/site.tpbf0r7vq5.js",
-      "AssetFile": "C:\\Users\\LEANDRO\\Desktop\\SiconATT-main1\\wwwroot\\js\\site.js",
-      "Selectors": [],
-      "ResponseHeaders": [
-        {
-          "Name": "Accept-Ranges",
-          "Value": "bytes"
-        },
-        {
-          "Name": "Content-Length",
-          "Value": "14031"
-        },
-        {
-          "Name": "Content-Type",
-          "Value": "text/javascript"
-        },
-        {
-          "Name": "ETag",
-          "Value": "\"75oUSpAAkcnnhk6M7BXFJ3bQE7XDNZMOFMZc0QDv3/E=\""
-        },
-        {
-          "Name": "Last-Modified",
-          "Value": "Sun, 06 Apr 2025 17:12:22 GMT"
-        },
-        {
-          "Name": "Cache-Control",
-          "Value": "max-age=31536000, immutable"
-        }
-      ],
-      "EndpointProperties": [
-        {
-          "Name": "fingerprint",
-          "Value": "tpbf0r7vq5"
-        },
-        {
-          "Name": "label",
-          "Value": "js/site.js"
-        },
-        {
-          "Name": "integrity",
-          "Value": "sha256-75oUSpAAkcnnhk6M7BXFJ3bQE7XDNZMOFMZc0QDv3/E="
+          "Value": "sha256-iax6nsWlwGMWv2HTTbjgPagMDYXs3HGAJDKNxtnCBLI="
         }
       ]
     },

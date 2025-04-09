@@ -1,4 +1,5 @@
 C:\Users\LEANDRO\Desktop\SiconATT-main1\obj\Release\net8.0\PubTmp\Out\Servidor.exe
+C:\Users\LEANDRO\Desktop\SiconATT-main1\obj\Release\net8.0\PubTmp\Out\web.config
 C:\Users\LEANDRO\Desktop\SiconATT-main1\obj\Release\net8.0\PubTmp\Out\appsettings.Development.json
 C:\Users\LEANDRO\Desktop\SiconATT-main1\obj\Release\net8.0\PubTmp\Out\appsettings.json
 C:\Users\LEANDRO\Desktop\SiconATT-main1\obj\Release\net8.0\PubTmp\Out\Servidor.dll

@@ -3,6 +3,7 @@
     if (btnProcessar) {
         btnProcessar.addEventListener("click", function (event) {
             event.preventDefault(); // Evita o envio normal do formulário
+            fluxo2Ativo = false;
 
             var formData = new FormData(document.querySelector("form"));
 
@@ -140,16 +141,166 @@ function atualizarValoresCargo() {
                 // Fechar o modal
                 var modal = bootstrap.Modal.getInstance(document.getElementById('modalCargo'));
                 modal.hide();
-                abrirModalCcoluna16(); // Abrir o modal Ccoluna16
+
+                fluxo2Ativo = true;
+                mostrarModalAtualizacaoCategoria(); 
             } else {
                 alert("Erro ao atualizar valores: " + data.message);
             }
         })
         .catch(error => console.error('Erro ao atualizar valores de Ccoluna21:', error));
 }
+//<< =========================  Modal Cargo/calculo ===========================>>
 
+function mostrarModalAtualizacaoCategoria() {
+    fetch('/Convenio/ObterValoresPrefeituraCategoria')
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById("valoresPrefeituraCategoriaContainer");
+            container.innerHTML = "";
 
-//<< =========================  Modal Ccoluna16 ===========================>>
+            data.forEach(item => {
+                container.innerHTML += `
+                    <div class="row mb-2">
+                        <div class="col-md-5">
+                            <strong>${item.ccoluna1}</strong>
+                        </div>
+                        <div class="col-md-4">
+                            ${item.ccoluna16}
+                        </div>
+                        <div class="col-md-3">
+                            <input type="text" class="form-control categoriaInput" 
+                                data-prefeitura="${item.ccoluna1}" 
+                                data-categoria="${item.ccoluna16}" 
+                                placeholder="Nova categoria (Ccoluna18)">
+                        </div>
+                    </div>
+                `;
+            });
+
+            const modal = new bootstrap.Modal(document.getElementById('modalConfirmacaoAtualizacao'));
+            modal.show();
+
+            // Vincular botão continuar
+            document.getElementById('btnSalvarCategorias').onclick = salvarCategoriasAtualizadas;
+        })
+        .catch(error => console.error('Erro ao buscar dados de prefeitura/categoria:', error));
+}
+
+function salvarCategoriasAtualizadas() {
+    const atualizacoes = [];
+
+    document.querySelectorAll('.categoriaInput').forEach(input => {
+        const prefeitura = input.getAttribute('data-prefeitura');
+        const categoria = input.getAttribute('data-categoria');
+        const novaCategoria = input.value.trim();
+
+        if (novaCategoria) {
+            atualizacoes.push({
+                ccoluna1: prefeitura,
+                ccoluna16: categoria,
+                ccoluna18: novaCategoria
+            });
+        }
+    });
+
+    if (atualizacoes.length === 0) {
+        alert("Nenhuma nova categoria foi inserida.");
+        return;
+    }
+
+    fetch('/Convenio/AtualizarValoresCcoluna16Fluxo2', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(atualizacoes)
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const modal = bootstrap.Modal.getInstance(document.getElementById('modalConfirmacaoAtualizacao'));
+                modal.hide();
+                buscarValoresDistintosFluxo2(); // Continuar o fluxo normalmente
+            } else {
+                alert("Erro ao atualizar categorias: " + data.message);
+            }
+            
+        })
+        .catch(error => console.error('Erro ao salvar categorias:', error));
+}
+//<< =========================  Modal Categoria Fluxo2 ===========================>>
+
+function buscarValoresDistintosFluxo2() {
+    fetch('/Convenio/ObterValoresDistintosCcoluna16')
+        .then(response => response.json())
+        .then(data => {
+            console.log('Dados de Ccoluna16:', data);  // Adicione esta linha para verificar os dados
+            const container = document.getElementById("valoresContainer");
+
+            if (!container) {
+                console.error("Elemento #valoresContainer não encontrado.");
+                return;
+            }
+
+            container.innerHTML = "";
+
+            data.forEach(valor => {
+                container.innerHTML += `
+                    <div class="mb-1">
+                        <label class="form-label">Vinculo: ${valor}</label>
+                        <input type="text" class="form-control novoValor" data-original="${valor}" placeholder="${valor}">
+                    </div>
+                `;
+            });
+
+            var modal = new bootstrap.Modal(document.getElementById('modalCcoluna16'));
+            modal.show();
+        })
+        .catch(error => console.error('Erro ao buscar valores distintos:', error));
+}
+
+function atualizarValoresCcoluna16() {
+    const valoresAtualizados = {};
+    document.querySelectorAll(".novoValor").forEach(input => {
+        const original = input.getAttribute("data-original");
+        const novoValor = input.value.trim();
+
+        if (novoValor && novoValor !== original) {
+            valoresAtualizados[original] = novoValor;
+        }
+    });
+
+    if (Object.keys(valoresAtualizados).length === 0) {
+        alert("Nenhuma alteração foi feita.");
+        return;
+    }
+
+    fetch('/Convenio/AtualizarValoresCcoluna16Fluxo2', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(valoresAtualizados)
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Fechar o modal
+                var modal = bootstrap.Modal.getInstance(document.getElementById('modalCcoluna16'));
+                modal.hide();
+
+                if (fluxo2Ativo) {
+                    monstrarResumoDicrepancias()
+                    fluxo2Ativo = false; // reseta a flag
+                    return; // Não chama abrirModalCalculo()
+                }
+
+                abrirModalCalculo(); // Abrir o modal Calculo
+            } else {
+                alert("Erro ao atualizar valores: " + data.message);
+            }
+        })
+        .catch(error => console.error('Erro ao atualizar valores de Calculo:', error));
+}
+
+//<< =========================  Modal Categoria Fluxo1 ===========================>>
 
 function buscarValoresDistintos() {
     fetch('/Convenio/ObterValoresDistintosCcoluna16')
@@ -207,6 +358,13 @@ function atualizarValoresCcoluna16() {
                 // Fechar o modal
                 var modal = bootstrap.Modal.getInstance(document.getElementById('modalCcoluna16'));
                 modal.hide();
+
+                if (fluxo2Ativo) {
+                    monstrarResumoDicrepancias()
+                    fluxo2Ativo = false; // reseta a flag
+                    return; // Não chama abrirModalCalculo()
+                }
+
                 abrirModalCalculo(); // Abrir o modal Calculo
             } else {
                 alert("Erro ao atualizar valores: " + data.message);
@@ -232,10 +390,11 @@ function buscarValoresCalculo() {
             container.innerHTML = "";
 
             data.forEach(valor => {
+                const [codigo, descricao] = valor.split(' - ');
                 container.innerHTML += `
                     <div class="mb-1">
-                        <label class="form-label">Perfil Cálculo: ${valor}</label>
-                        <input type="text" class="form-control novoValor" data-original="${valor}" placeholder="${valor}">
+                        <label class="form-label">Perfil Cálculo: ${descricao}</label>
+                        <input type="text" class="form-control novoValor" data-original="${codigo}" placeholder="${descricao}">
                     </div>
                 `;
             });
@@ -276,46 +435,11 @@ function atualizarValoresCcoluna18() {
             if (data.success) {
                 var modal = bootstrap.Modal.getInstance(document.getElementById('modalCalculo'));
                 modal.hide();
-
-                // Chamar o backend para buscar as quantidades de discrepâncias
-                fetch('/Convenio/ObterQuantidadeDiscrepancias')
-                    .then(response => response.json())
-                    .then(discrepancias => {
-                        const container = document.getElementById("discrepanciasContainer");
-                        container.innerHTML = `
-                            <p><strong>Resumo de Discrepâncias Geradas:</strong></p>
-                            <ul>
-                                <li>SERVIDOR: ${discrepancias.servidor} linha(s)</li>
-                                <li>MATRÍCULA: ${discrepancias.matricula} linha(s)</li>
-                                <li>CATEGORIA: ${discrepancias.categoria} linha(s)</li>
-                                <li>SECRETARIA: ${discrepancias.secretaria} linha(s)</li>
-                                <li>PERFIL CÁLCULO: ${discrepancias.perfilCalculo} linha(s)</li>
-                            </ul>
-                        `;
-
-                        var modalResumo = new bootstrap.Modal(document.getElementById('modalDiscrepancias'));
-                        modalResumo.show();
-                    })
-                    .catch(error => {
-                        console.error('Erro ao buscar discrepâncias:', error);
-                        alert('Erro ao obter resumo de discrepâncias.');
-                    });
+                monstrarResumoDicrepancias();
             }
         });
 }
 
-window.addEventListener('DOMContentLoaded', () => {
-    fetch('/SelectOption/Preencher', {
-        method: 'POST'
-    })
-        .then(response => response.json())
-        .then(data => {
-            console.log("Tabela SelectOption foi preenchida:", data);
-        })
-        .catch(error => {
-            console.error("Erro ao preencher tabela:", error);
-        });
-});
 //<< =========================  Controle de fluxo dos Modais ===========================>>
 
 function abrirModalCargo() {
@@ -356,4 +480,27 @@ function abrirModalCalculo() {
     buscarValoresCalculo();
 }
 
+function monstrarResumoDicrepancias() {
+    fetch('/Convenio/ObterQuantidadeDiscrepancias')
+        .then(response => response.json())
+        .then(discrepancias => {
+            const container = document.getElementById("discrepanciasContainer");
+            container.innerHTML = `
+                            <p><strong>Resumo de Discrepâncias Geradas:</strong></p>
+                            <ul>
+                                <li>SERVIDOR: ${discrepancias.servidor} linha(s)</li>
+                                <li>MATRÍCULA: ${discrepancias.matricula} linha(s)</li>
+                                <li>CATEGORIA: ${discrepancias.categoria} linha(s)</li>
+                                <li>SECRETARIA: ${discrepancias.secretaria} linha(s)</li>
+                                <li>PERFIL CÁLCULO: ${discrepancias.perfilCalculo} linha(s)</li>
+                            </ul>
+                        `;
 
+            var modalResumo = new bootstrap.Modal(document.getElementById('modalDiscrepancias'));
+            modalResumo.show();
+        })
+        .catch(error => {
+            console.error('Erro ao buscar discrepâncias:', error);
+            alert('Erro ao obter resumo de discrepâncias.');
+        });
+}

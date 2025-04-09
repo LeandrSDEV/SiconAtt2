@@ -513,7 +513,6 @@ C:\Users\LEANDRO\Desktop\SiconATT-main1\obj\Debug\net8.0\staticwebassets\msbuild
 C:\Users\LEANDRO\Desktop\SiconATT-main1\obj\Debug\net8.0\staticwebassets\msbuild.buildMultiTargeting.Servidor.props
 C:\Users\LEANDRO\Desktop\SiconATT-main1\obj\Debug\net8.0\staticwebassets\msbuild.buildTransitive.Servidor.props
 C:\Users\LEANDRO\Desktop\SiconATT-main1\obj\Debug\net8.0\staticwebassets.pack.json
-C:\Users\LEANDRO\Desktop\SiconATT-main1\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 C:\Users\LEANDRO\Desktop\SiconATT-main1\obj\Debug\net8.0\Servidor.csproj.Up2Date
 C:\Users\LEANDRO\Desktop\SiconATT-main1\obj\Debug\net8.0\Servidor.genruntimeconfig.cache
 C:\Users\LEANDRO\Desktop\SiconATT-main1\obj\Debug\net8.0\ref\Servidor.dll
@@ -1025,3 +1024,5 @@ C:\Users\leandro.santos\Music\SiconAtt2-main\obj\Debug\net8.0\refint\Servidor.dl
 C:\Users\leandro.santos\Music\SiconAtt2-main\obj\Debug\net8.0\Servidor.pdb
 C:\Users\leandro.santos\Music\SiconAtt2-main\obj\Debug\net8.0\Servidor.genruntimeconfig.cache
 C:\Users\leandro.santos\Music\SiconAtt2-main\obj\Debug\net8.0\ref\Servidor.dll
+C:\Users\LEANDRO\Desktop\SiconATT-main1\bin\Debug\net8.0\web.config
+C:\Users\LEANDRO\Desktop\SiconATT-main1\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt

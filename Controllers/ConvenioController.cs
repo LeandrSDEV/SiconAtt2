@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using NPOI.HSSF.UserModel;
-using NPOI.SS.Formula.Functions;
 using Servidor.Data;
 using Servidor.ErrosService;
 using Servidor.Models;
@@ -112,6 +111,43 @@ namespace Servidor.Controllers
             return Json(valores1);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> ObterValoresPrefeituraCategoria()
+        {
+            var valores = await _context.Contracheque
+                .Select(c => new { c.Ccoluna1, c.Ccoluna16 })
+                .Distinct()
+                .ToListAsync();
+
+            return Json(valores);
+        }
+
+        // ============ Atualização Categoria/Cargo ==================
+
+        [HttpPost]
+        public async Task<IActionResult> AtualizarValoresCcoluna181([FromBody] List<AtualizacaoCategoriaDto> atualizacoes)
+        {
+            if (atualizacoes == null || !atualizacoes.Any())
+                return BadRequest(new { success = false, message = "Nenhuma atualização recebida." });
+
+            foreach (var item in atualizacoes)
+            {
+                var registros = await _context.Contracheque
+                    .Where(c => c.Ccoluna1 == item.Ccoluna1 && c.Ccoluna16 == item.Ccoluna16)
+                    .ToListAsync();
+
+                foreach (var registro in registros)
+                {
+                    registro.Ccoluna18 = item.Ccoluna18;
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true });
+        }
+
+
         // ============ Atualização de Ccoluna21 ==================
         [HttpPost]
         public async Task<IActionResult> AtualizarValoresCcoluna21([FromBody] Dictionary<string, string> valoresAtualizados)
@@ -129,16 +165,20 @@ namespace Servidor.Controllers
 
             foreach (var registro in registros)
             {
-                if (valoresAtualizados.TryGetValue(registro.Ccoluna1, out var novoValor) ||
-                    valoresAtualizados.TryGetValue(registro.Cargo, out novoValor))
+                if (valoresAtualizados.ContainsKey(registro.Cargo))
                 {
-                    registro.Ccoluna21 = novoValor;
+                    registro.Ccoluna21 = valoresAtualizados[registro.Cargo];
+                }
+                else if (valoresAtualizados.ContainsKey(registro.Ccoluna1))
+                {
+                    registro.Ccoluna21 = valoresAtualizados[registro.Ccoluna1];
                 }
             }
 
             await _context.SaveChangesAsync();
             return Json(new { success = true, message = "Valores de Ccoluna21 atualizados com sucesso!" });
         }
+
 
         //   ============  Coluna 16 ==================
 
@@ -175,9 +215,48 @@ namespace Servidor.Controllers
                     registro.Ccoluna16 = novoValor;
                 }
             }
+            
+            await _context.SaveChangesAsync();
+
+            
+
+            return Json(new { success = true, message = "Valores de Ccoluna16 atualizados com sucesso!" });
+
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AtualizarValoresCcoluna16Fluxo2([FromBody] Dictionary<string, string> valoresAtualizados1)
+        {
+            if (valoresAtualizados1 == null || !valoresAtualizados1.Any())
+            {
+                return Json(new { success = false, message = "Nenhum valor foi enviado para atualização." });
+            }
+
+            var chaves = valoresAtualizados1.Keys.ToList();
+
+            var registros = await _context.Contracheque
+                .Where(x => chaves.Contains(x.Ccoluna16))
+                .ToListAsync();
+
+            foreach (var registro in registros)
+            {
+                if (valoresAtualizados1.TryGetValue(registro.Ccoluna16, out var novoValor))
+                {
+                    registro.Ccoluna16 = novoValor;
+                }
+            }
 
             await _context.SaveChangesAsync();
+
+            await _servidorService.GerarEncontradoAsync();
+            await _matriculaService.GerarMatriculasAsync();
+            await _categoriaService.GerarVinculoAsync();
+            await _secretariaService.GerarSecretariasAsync();
+            await _perfilCalculo.GeradorPerfilCalculo();
+            await _cleanupService.LimparTabelasAsync();
+
             return Json(new { success = true, message = "Valores de Ccoluna16 atualizados com sucesso!" });
+
         }
 
         //   ============  Calculo ==================
@@ -263,7 +342,6 @@ namespace Servidor.Controllers
             await _secretariaService.GerarSecretariasAsync();
             await _perfilCalculo.GeradorPerfilCalculo();
             await _cleanupService.LimparTabelasAsync();
-
             return Ok(new { success = true, message = $"{totalAlterados} valores atualizados com sucesso." });
         }
 
@@ -299,6 +377,7 @@ namespace Servidor.Controllers
             {
                 return Json(new { success = false, message = ex.Message });
             }
+         
         }
      
         //<<<<<<<   =================================   PRIVATES ===================================== >>>>>>>>>>>>>>>>>
@@ -370,6 +449,13 @@ namespace Servidor.Controllers
         {"PREFEITURA", 1},
         {"EDUCAÇÃO", 2},
         {"PREFEITURA MUNICIPAL DE ARACATU", 1},
+        {"SECRETARIA DE EDUCAÇÃO E JUVENTUDE", 4},
+        {"PREFEITURA MUNICIPAL DE JUAZEIRO", 1},
+        {"SECRETARIA DE SAÚDE", 5},
+        {"AMA", 2},
+        {"SECRETARIA DE ORDEM PUBLICA", 31},
+        {"CSTT", 3},
+        {"PREFEITURA MUNICIPAL DE ITAPETINGA", 1},
         {"NADA", 99},
     };
 
@@ -388,8 +474,8 @@ namespace Servidor.Controllers
         {"Estatutário", 10},
         {"TEMPORARIO", 11},
         {"BENEFICÍARIO", 12},
+        {"Beneficiário", 12},
         {"AGENTE POLITICO", 13},
-        {"Agente Político", 13},
         {"AGUARDANDO ESPECIFICAR", 14},
         {"EFETIVO/COMISSÃO", 15},
         {"ESTÁVEL", 16},
@@ -422,6 +508,7 @@ namespace Servidor.Controllers
         {"Temporário - CLT", 49},
         {"Prefeito", 51},
         {"TUTELAR", 52},
+        {"Temporário",11},
     };
 
             using (var stream = arquivoExcel.OpenReadStream())

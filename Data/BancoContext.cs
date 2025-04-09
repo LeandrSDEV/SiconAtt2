@@ -35,6 +35,8 @@ namespace Servidor.Data
                 new SelectOptionModel { Nome = "Município de Alcinópolis/MS", ValorColuna9 = "ALCINOPOLIS", ValorColuna10 = "MS" },
                 new SelectOptionModel { Nome = "Município de Cupira/PE", ValorColuna9 = "CUPIRA", ValorColuna10 = "PE" },
                 new SelectOptionModel { Nome = "Município de Aracatu/BA", ValorColuna9 = "ARACATU", ValorColuna10 = "BA" },
+                new SelectOptionModel { Nome = "Município de Juazeiro/BA", ValorColuna9 = "JUAZEIRO", ValorColuna10 = "BA" },
+                new SelectOptionModel { Nome = "Município de Itapetinga/BA", ValorColuna9 = "ITAPETINGA", ValorColuna10 = "BA" },
             };
 
                 context.SelectOptions.AddRange(selectOption);

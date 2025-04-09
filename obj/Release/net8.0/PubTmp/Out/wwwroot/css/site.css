@@ -1,4 +1,4 @@
-body {
+.Layout1 {
     font-family: 'Roboto', sans-serif;
     background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(34, 193, 195, 0.8), rgba(0, 0, 0, 0.8));
     background-size: cover;
@@ -8,6 +8,10 @@ body {
     margin-bottom: 60px;
 }
 
+.bodylayout1{
+    padding: 100px 0;
+}
+
 h3 {
     color: #ffffff;
     font-weight: 500;
@@ -15,23 +19,17 @@ h3 {
 }
 
 .form-label {
-    color: #f2f2f2;
+    color:white;
 }
 
-.btn-primary {
-    background-color: #5e72e4;
-    border-color: #5e72e4;
-    transition: background-color 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
+.btn-primary:hover {
+    background-color: #4e62d5;
+    border-color: #4e62d5;
+    transform: scale(1.05);
 }
-
-    .btn-primary:hover {
-        background-color: #4e62d5;
-        border-color: #4e62d5;
-        transform: scale(1.05);
-    }
 
 .txtcss, .excelcss {
-    background-color: rgba(98, 0, 234, 0.7);
+    background-color: rgb(33, 31, 31, 0,47);
     border-radius: 15px;
     padding: 20px;
     text-align: center;
@@ -47,17 +45,7 @@ h3 {
         box-shadow: 0px 15px 40px rgba(0, 0, 0, 0.5);
     }
 
-.form-control {
-    border-radius: 5px;
-    border: 1px solid #ddd;
-    padding: 10px;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
 
-    .form-control:focus {
-        border-color: #6200ea;
-        box-shadow: 0 0 0 0.25rem rgba(98, 0, 234, 0.25);
-    }
 
 select.form-select {
     border-radius: 5px;
@@ -65,20 +53,39 @@ select.form-select {
     padding: 10px;
 }
 
-.navbar-light .navbar-toggler-icon {
-    background-color: #6200ea;
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 10px 20px;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
-
-.navbar-nav .nav-link {
-    color: #f5f5f5;
-    transition: color 0.3s ease;
-}
-
-    .navbar-nav .nav-link:hover {
-        color: #fff;
-    }
 
 footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
     background-color: rgba(0, 0, 0, 0.8);
-    padding: 10px;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+}
+
+/* Modal customizado */
+.modal-content {
+    border-radius: 10px;
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.modal-body {
+    font-size: 1.2em;
+    color: #ddd;
 }
